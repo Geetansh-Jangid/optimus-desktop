@@ -1,104 +1,59 @@
 #!/usr/bin/env bash
-# ============================================================
-# Optimus Desktop — AUR Helper Setup
-# Author: Geetansh Jangid
-# ============================================================
+# ==============================================
+# Optimus Desktop: AUR Helper (Paru) Setup
+# ==============================================
+set -euo pipefail
 
-set -e
+echo "[INFO] ==== Optimus Desktop :: AUR Helper Setup ===="
 
-AUR_HELPER="paru"
-AUR_URL="https://aur.archlinux.org/paru.git"
-AUR_DIR="/tmp/aur_helper_install"
-LOG_FILE="${HOME}/.local/share/optimus-desktop/logs/aur_helper.log"
+# ---- Check Dependencies ----
+echo "[INFO] Checking required dependencies..."
+DEPS=(base-devel git sudo curl)
+MISSING=()
 
-mkdir -p "$(dirname "$LOG_FILE")"
-
-log() {
-  echo -e "[${1}] ${2}" | tee -a "$LOG_FILE"
-}
-
-ask() {
-  read -rp "❯ $1 [Y/n]: " choice
-  case "$choice" in
-  [nN]*) return 1 ;;
-  *) return 0 ;;
-  esac
-}
-
-require_cmd() {
-  if ! command -v "$1" &>/dev/null; then
-    log "WARN" "Missing dependency: $1"
-    MISSING_DEPS+=("$1")
+for pkg in "${DEPS[@]}"; do
+  if ! command -v "$pkg" &>/dev/null && ! pacman -Qi "$pkg" &>/dev/null; then
+    MISSING+=("$pkg")
   fi
-}
+done
 
-install_dependency() {
-  local pkg="$1"
-  log "INFO" "Installing missing dependency: $pkg"
-  sudo pacman -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1
-}
-
-check_dependencies() {
-  log "INFO" "Checking required dependencies..."
-  MISSING_DEPS=()
-
-  require_cmd git
-  require_cmd makepkg
-  require_cmd sudo
-
-  if ! pacman -Qi base-devel &>/dev/null; then
-    MISSING_DEPS+=("base-devel")
-  fi
-
-  if ((${#MISSING_DEPS[@]} > 0)); then
-    log "WARN" "Missing: ${MISSING_DEPS[*]}"
-    if ask "Install missing dependencies using pacman?"; then
-      sudo pacman -Sy --needed --noconfirm "${MISSING_DEPS[@]}"
-      log "SUCCESS" "Dependencies installed successfully."
-    else
-      log "ERROR" "User declined dependency installation. Exiting."
-      exit 1
-    fi
+if ((${#MISSING[@]})); then
+  echo "[WARN] Missing packages: ${MISSING[*]}"
+  read -rp "Install them now? [Y/n]: " ans
+  ans=${ans,,}
+  if [[ $ans != "n" ]]; then
+    sudo pacman -S --needed --noconfirm "${MISSING[@]}"
   else
-    log "OK" "All dependencies satisfied."
-  fi
-}
-
-install_paru() {
-  log "INFO" "Installing $AUR_HELPER..."
-  rm -rf "$AUR_DIR"
-  mkdir -p "$AUR_DIR"
-  cd "$AUR_DIR"
-
-  git clone "$AUR_URL" . >>"$LOG_FILE" 2>&1
-  makepkg -si --noconfirm >>"$LOG_FILE" 2>&1
-
-  cd -
-  rm -rf "$AUR_DIR"
-
-  if command -v "$AUR_HELPER" &>/dev/null; then
-    log "SUCCESS" "$AUR_HELPER installed successfully!"
-  else
-    log "ERROR" "Failed to install $AUR_HELPER."
+    echo "[ERROR] Cannot continue without dependencies."
     exit 1
   fi
-}
+else
+  echo "[OK] All dependencies satisfied."
+fi
 
-main() {
-  log "INFO" "==== Optimus Desktop :: AUR Helper Setup ===="
+# ---- Check if paru already exists ----
+if command -v paru &>/dev/null; then
+  echo "[OK] Paru already installed: $(paru --version | head -n1)"
+  exit 0
+fi
 
-  if command -v "$AUR_HELPER" &>/dev/null; then
-    log "OK" "$AUR_HELPER is already installed. Skipping setup."
-    exit 0
-  fi
+# ---- Confirm install ----
+read -rp "❯ Proceed to install paru (paru)? [Y/n]: " ans
+ans=${ans,,}
+[[ $ans == "n" ]] && echo "[INFO] Skipping paru installation." && exit 0
 
-  check_dependencies
+# ---- Build paru from AUR ----
+echo "[INFO] Installing paru..."
+cd /tmp || exit 1
+rm -rf paru-bin
+git clone https://aur.archlinux.org/paru-bin.git
+cd paru-bin
+makepkg -si --noconfirm
 
-  if ask "Proceed to install $AUR_HELPER (paru)?"; then
-    install_paru
-  else
-    log "INFO" "Installation skipped by user."
-  fi
-}
-
-main "$@"
+# ---- Verify ----
+if command -v paru &>/dev/null; then
+  echo "[OK] Paru successfully installed: $(paru --version | head -n1)"
+else
+  echo "[ERROR] Paru installation failed."
+  exit 1
+fi
