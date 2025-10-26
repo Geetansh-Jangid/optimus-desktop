@@ -2,13 +2,13 @@
 # ==============================================
 # Optimus Desktop: Chaotic-AUR Mirror Setup
 # ==============================================
-set -e
+set -euo pipefail
 
 echo "🔍 Checking system requirements..."
 for pkg in sudo pacman curl; do
   if ! command -v "$pkg" &>/dev/null; then
     echo "❌ Missing dependency: $pkg"
-    read -p "➡️  Install $pkg now? [Y/n] " ans
+    read -rp "➡️  Install $pkg now? [Y/n] " ans
     ans=${ans,,}
     if [[ $ans != "n" ]]; then
       sudo pacman -Sy --needed --noconfirm "$pkg"
@@ -26,23 +26,30 @@ if grep -q "chaotic-aur" /etc/pacman.conf; then
 fi
 
 echo "🌀 Setting up Chaotic-AUR mirrorlist..."
-read -p "➡️  Proceed to install Chaotic-AUR? [Y/n] " ans
+read -rp "➡️  Proceed to install Chaotic-AUR? [Y/n] " ans
 ans=${ans,,}
 [[ $ans == "n" ]] && echo "❌ Skipped Chaotic-AUR setup." && exit 0
 
-# Import key
+# ---- Import key ----
+echo "🔑 Importing Chaotic-AUR key..."
 sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 sudo pacman-key --lsign-key 3056513887B78AEB
 
-# Install mirrorlist
-sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'# Add repo if not exists
+# ---- Install keyring and mirrorlist ----
+echo "📦 Installing keyring and mirrorlist..."
+sudo pacman -U --noconfirm \
+  'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+sudo pacman -U --noconfirm \
+  'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
+# ---- Add repo if not exists ----
 if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
-  echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+  echo "📝 Adding [chaotic-aur] repository to pacman.conf..."
+  echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" |
+    sudo tee -a /etc/pacman.conf >/dev/null
 fi
 
-# Refresh databases
+# ---- Refresh databases ----
 echo "🔄 Refreshing package databases..."
 sudo pacman -Syy
 
