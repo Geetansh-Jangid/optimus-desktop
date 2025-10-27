@@ -1,57 +1,56 @@
 #!/usr/bin/env bash
-# ==============================================
-# Optimus Desktop: Package Installer
-# ==============================================
+# =============================================
+# Optimus Desktop :: Package Installer
+# Installs pacman + AUR packages from text lists
+# =============================================
+
 set -euo pipefail
 
-DATA_DIR="$(dirname "$0")/../data"
-PACMAN_FILE="$DATA_DIR/packages-pacman.txt"
-AUR_FILE="$DATA_DIR/packages-aur.txt"
-LOG_FILE="$DATA_DIR/install-log-$(date +%Y%m%d-%H%M%S).txt"
+PACMAN_FILE="../data/pkgs-pacman.txt"
+AUR_FILE="../data/pkgs-aur.txt"
 
-echo "⚙️  ==== Optimus Desktop :: System Package Installer ===="
-
-# ---- Check for data files ----
-if [[ ! -f "$PACMAN_FILE" || ! -f "$AUR_FILE" ]]; then
-  echo "❌ Package list files not found in $DATA_DIR"
-  echo "   Please run 'scripts/package-export.sh' first."
-  exit 1
-fi
-
-# ---- Detect AUR helper ----
-if command -v paru &>/dev/null; then
+# ---- Detect AUR Helper ----
+if command -v paru >/dev/null 2>&1; then
   AUR_HELPER="paru"
-elif command -v yay &>/dev/null; then
+elif command -v yay >/dev/null 2>&1; then
   AUR_HELPER="yay"
-elif command -v trizen &>/dev/null; then
-  AUR_HELPER="trizen"
 else
-  AUR_HELPER=""
-fi
-
-if [[ -z "$AUR_HELPER" ]]; then
-  echo "⚠️  No AUR helper detected!"
-  echo "   Please install one (e.g., paru) using 'scripts/paru-setup.sh'."
+  echo "[ERROR] No AUR helper found (paru/yay). Please install one first."
   exit 1
 fi
 
-# ---- Confirm action ----
-echo "📦 Found package lists:"
-echo "   • Repo packages: $(wc -l <"$PACMAN_FILE")"
-echo "   • AUR packages:  $(wc -l <"$AUR_FILE")"
-read -rp "❯ Proceed to install all packages? [Y/n]: " ans
-ans=${ans,,}
-[[ $ans == "n" ]] && echo "❌ Installation aborted." && exit 0
+echo "[INFO] Using AUR helper: $AUR_HELPER"
 
-# ---- Install official repo packages ----
-echo "🚀 Installing repo packages..."
-sudo pacman -Syu --needed --noconfirm - <"$PACMAN_FILE" | tee -a "$LOG_FILE" || true
+# ---- Function to read non-empty, non-comment lines ----
+read_packages() {
+  local file="$1"
+  grep -Ev '^\s*#|^\s*$' "$file" 2>/dev/null || true
+}
 
-# ---- Install AUR packages ----
-echo "🌐 Installing AUR packages via $AUR_HELPER..."
-"$AUR_HELPER" -S --needed --noconfirm - <"$AUR_FILE" | tee -a "$LOG_FILE" || true
+# ---- Install Pacman Packages ----
+if [[ -f "$PACMAN_FILE" ]]; then
+  echo "[INFO] Installing pacman packages from $PACMAN_FILE..."
+  pacman_pkgs=($(read_packages "$PACMAN_FILE"))
+  if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
+    sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+  else
+    echo "[INFO] No pacman packages to install."
+  fi
+else
+  echo "[WARN] Pacman list not found: $PACMAN_FILE"
+fi
 
-# ---- Post-install summary ----
-echo
-echo "✅ All packages processed."
-echo "🧾 Log saved at: $LOG_FILE"
+# ---- Install AUR Packages ----
+if [[ -f "$AUR_FILE" ]]; then
+  echo "[INFO] Installing AUR packages from $AUR_FILE..."
+  aur_pkgs=($(read_packages "$AUR_FILE"))
+  if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
+    $AUR_HELPER -S --needed --noconfirm "${aur_pkgs[@]}"
+  else
+    echo "[INFO] No AUR packages to install."
+  fi
+else
+  echo "[WARN] AUR list not found: $AUR_FILE"
+fi
+
+echo "[DONE] All packages processed successfully!"
