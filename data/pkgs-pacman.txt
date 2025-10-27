@@ -13,3 +13,4 @@ rofi
 swaync
 brave-bin
 zen-browser-bin
+niri
