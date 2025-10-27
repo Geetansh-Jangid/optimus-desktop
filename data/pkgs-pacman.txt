@@ -14,3 +14,5 @@ swaync
 brave-bin
 zen-browser-bin
 niri
+zsh-theme-powerlevel10k-git
+oh-my-zsh-git
