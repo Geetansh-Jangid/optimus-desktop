@@ -1,215 +1,116 @@
 #!/usr/bin/env bash
-# Optimus Desktop: AUR Helper (paru/yay) Setup - Improved
+# ===========================================
+# Optimus Desktop: AUR Helper (Paru/Yay) Setup (bin versions)
+# ===========================================
 set -euo pipefail
 
-INFO() { printf "[INFO] %s\n" "$*"; }
-WARN() { printf "[WARN] %s\n" "$*" >&2; }
-ERROR() { printf "[ERROR] %s\n" "$*" >&2; }
-SUCCESS() { printf "[SUCCESS] %s\n" "$*"; }
+echo "[INFO] ==== Optimus Desktop :: AUR Helper Setup (bin) ===="
 
-echo
-INFO "==== Optimus Desktop :: AUR Helper Setup ===="
+# ---- Check Dependencies ----
+echo "[INFO] Checking required dependencies..."
+DEPS=(base-devel git sudo curl)
+MISSING=()
 
-# ---- Requirements ----
-# Packages we want to ensure are available for building AUR packages.
-# 'base-devel' is a pacman group, the rest are regular packages/commands.
-REQUIRED_PKG_GROUPS=(base-devel)
-REQUIRED_PACKAGES=(git sudo curl pacman) # 'makepkg' provided by base-devel but we still check command
-REQUIRED_COMMANDS=(git curl makepkg)
-
-MISSING_PKGS=()
-MISSING_CMDS=()
-
-# helper to check pacman group installed
-is_group_installed() {
-  local group="$1"
-  pacman -Qg "$group" &>/dev/null
+is_installed() {
+  local pkg=$1
+  command -v "$pkg" &>/dev/null || pacman -Qi "$pkg" &>/dev/null
 }
 
-# helper to check package installed
-is_pkg_installed() {
-  local pkg="$1"
-  pacman -Qi "$pkg" &>/dev/null
-}
-
-# check groups
-for g in "${REQUIRED_PKG_GROUPS[@]}"; do
-  if ! is_group_installed "$g"; then
-    MISSING_PKGS+=("$g")
+for pkg in "${DEPS[@]}"; do
+  if ! is_installed "$pkg"; then
+    MISSING+=("$pkg")
   fi
 done
 
-# check packages (but many might be provided by groups)
-for p in "${REQUIRED_PACKAGES[@]}"; do
-  if ! is_pkg_installed "$p"; then
-    # If it's a group we already will handle above
-    MISSING_PKGS+=("$p")
-  fi
-done
-
-# check commands (some dependencies might be commands from other packages)
-for c in "${REQUIRED_COMMANDS[@]}"; do
-  if ! command -v "$c" &>/dev/null; then
-    MISSING_CMDS+=("$c")
-  fi
-done
-
-if ((${#MISSING_PKGS[@]} + ${#MISSING_CMDS[@]})); then
-  WARN "Missing package/groups: ${MISSING_PKGS[*]:-none}"
-  WARN "Missing commands: ${MISSING_CMDS[*]:-none}"
-  # Offer to install pacman group/packages (uses sudo)
-  read -r -p "Install missing packages/groups now with sudo? [Y/n]: " ans
-  ans=${ans:-y}
+if ((${#MISSING[@]})); then
+  echo "[WARN] Missing packages: ${MISSING[*]}"
+  read -rp "Install them now? [Y/n]: " ans
   ans=${ans,,}
-  if [[ $ans != "n" && $ans != "no" ]]; then
-    # Try to install only the pacman things (pacman groups and packages)
-    # Filter duplicates and ensure we pass only real package names (not empty)
-    PKGS_TO_INSTALL=()
-    for pkg in "${MISSING_PKGS[@]}"; do
-      [[ -n "$pkg" ]] && PKGS_TO_INSTALL+=("$pkg")
-    done
-
-    if ((${#PKGS_TO_INSTALL[@]})); then
-      INFO "Running: sudo pacman -S --needed --noconfirm ${PKGS_TO_INSTALL[*]}"
-      sudo pacman -S --needed --noconfirm "${PKGS_TO_INSTALL[@]}"
-    fi
-
-    # After pacman install, re-check commands
-    for c in "${REQUIRED_COMMANDS[@]}"; do
-      if ! command -v "$c" &>/dev/null; then
-        WARN "Command '$c' still missing after package install. You may need to install it manually."
-      fi
-    done
+  if [[ $ans != "n" ]]; then
+    sudo pacman -S --needed --noconfirm "${MISSING[@]}"
   else
-    ERROR "Cannot continue without required packages/commands."
+    echo "[ERROR] Cannot continue without dependencies."
     exit 1
   fi
 else
-  INFO "All required packages/commands appear present."
+  echo "[OK] All dependencies satisfied."
 fi
 
 # -------------------------------------------------------------------------
-# Check existing AUR helpers (including -bin variants)
+# ---- Check if AUR helper already installed ----
 # -------------------------------------------------------------------------
+
 AUR_HELPERS=(paru paru-bin yay yay-bin)
 
 for helper in "${AUR_HELPERS[@]}"; do
   if command -v "$helper" &>/dev/null; then
-    # Print whichever variant is present, and try to show version if it supports --version or -V
-    ver=""
-    if "$helper" --version &>/dev/null; then
-      ver=$("$helper" --version | head -n1)
-    elif "$helper" -V &>/dev/null; then
-      ver=$("$helper" -V | head -n1)
-    fi
-
-    SUCCESS "Detected installed AUR helper: $helper ${ver:+- $ver}"
+    local_cmd="${helper%-bin}"
+    echo "[OK] AUR helper '$helper' already installed: $("$local_cmd" --version | head -n1)"
     exit 0
   fi
 done
 
 # -------------------------------------------------------------------------
-# Ensure script not run as root (we need to build as normal user)
+# ---- User Choice ----
 # -------------------------------------------------------------------------
-if [[ $EUID -eq 0 ]]; then
-  WARN "It is not recommended to run this script as root."
-  read -r -p "Continue running as root? [y/N]: " rootans
-  rootans=${rootans:-n}
-  rootans=${rootans,,}
-  if [[ $rootans != "y" && $rootans != "yes" ]]; then
-    ERROR "Please run this script as a regular user with sudo privileges. Exiting."
-    exit 1
-  fi
-fi
 
-# -------------------------------------------------------------------------
-# User choice
-# -------------------------------------------------------------------------
 echo
-echo "Which AUR helper would you like to install?"
-echo "1) paru (Rust-based, actively maintained)"
-echo "2) yay  (Go-based, well-established)"
+echo "Which AUR helper would you like to install (bin version)?"
+echo "1) paru-bin (Rust-based, lightweight)"
+echo "2) yay-bin (Go-based, stable)"
+
 CHOICE=""
 while true; do
-  read -r -p $'❯ Enter your choice (1 or 2): ' choice_num
+  read -rp "❯ Enter your choice (1 or 2): " choice_num
   case "$choice_num" in
   1)
-    CHOICE="paru"
+    CHOICE="paru-bin"
     break
     ;;
   2)
-    CHOICE="yay"
+    CHOICE="yay-bin"
     break
     ;;
   *) echo "[ERROR] Invalid choice. Please enter '1' or '2'." ;;
   esac
 done
 
-read -r -p "Proceed to install ${CHOICE}? [Y/n]: " proceed
-proceed=${proceed:-y}
-proceed=${proceed,,}
-if [[ $proceed == "n" || $proceed == "no" ]]; then
-  INFO "Skipping installation."
-  exit 0
-fi
+echo "[INFO] Selected helper: $CHOICE"
+
+read -rp "❯ Proceed to install $CHOICE? [Y/n]: " ans
+ans=${ans,,}
+[[ $ans == "n" ]] && echo "[INFO] Installation canceled." && exit 0
 
 # -------------------------------------------------------------------------
-# Prepare build
+# ---- Install from AUR manually ----
 # -------------------------------------------------------------------------
-INFO "Installing $CHOICE..."
-if [[ "$CHOICE" == "paru" ]]; then
-  REPO_URL="https://aur.archlinux.org/paru-bin.git"
-  PKG_NAME="paru-bin"
-elif [[ "$CHOICE" == "yay" ]]; then
-  REPO_URL="https://aur.archlinux.org/yay-bin.git"
-  PKG_NAME="yay-bin"
-else
-  ERROR "Unrecognized choice '$CHOICE'"
-  exit 1
-fi
 
-BUILD_DIR=$(mktemp -d -t aurbuild.XXXXXX)
-trap 'rc=$?; rm -rf "$BUILD_DIR" || true; exit $rc' EXIT
+echo "[INFO] Installing $CHOICE from AUR..."
 
-INFO "Cloning $PKG_NAME from AUR..."
-if ! git clone --depth=1 "$REPO_URL" "$BUILD_DIR/$PKG_NAME"; then
-  ERROR "git clone failed. Check network and that git is installed."
-  exit 1
-fi
+BUILD_DIR=$(mktemp -d)
+trap 'rm -rf "$BUILD_DIR"' EXIT
 
-# Build and install
-INFO "Building and installing $PKG_NAME (this may take a while)..."
+REPO_URL="https://aur.archlinux.org/${CHOICE}.git"
+
+echo "[INFO] Cloning $CHOICE repository..."
+git clone "$REPO_URL" "$BUILD_DIR/$CHOICE"
+
+echo "[INFO] Building and installing $CHOICE..."
 (
-  set -e
-  cd "$BUILD_DIR/$PKG_NAME"
-  # ensure we run makepkg as the non-root user; makepkg refuses to run as root by design
-  if [[ $EUID -eq 0 ]]; then
-    WARN "makepkg should not run as root. Attempting to run as the original user."
-    # If SUDO_USER exists, try to run as them; otherwise abort.
-    if [[ -n "${SUDO_USER:-}" ]]; then
-      sudo -u "$SUDO_USER" makepkg -si --noconfirm
-    else
-      ERROR "Cannot determine non-root user to run makepkg. Run this script as a normal user."
-      exit 1
-    fi
-  else
-    makepkg -si --noconfirm
-  fi
+  cd "$BUILD_DIR/$CHOICE"
+  makepkg -si --noconfirm
 )
 
 # -------------------------------------------------------------------------
-# Final check
+# ---- Final Verification ----
 # -------------------------------------------------------------------------
-if command -v "$PKG_NAME" &>/dev/null; then
-  SUCCESS "$PKG_NAME successfully installed! 🎉"
-  # print a safe version output if supported
-  if "$PKG_NAME" --version &>/dev/null; then
-    "$PKG_NAME" --version | head -n1
-  elif "$PKG_NAME" -V &>/dev/null; then
-    "$PKG_NAME" -V | head -n1
-  fi
-  exit 0
+
+BIN_NAME="${CHOICE%-bin}"
+
+if command -v "$BIN_NAME" &>/dev/null; then
+  echo "[SUCCESS] $CHOICE successfully installed! 🎉"
+  "$BIN_NAME" --version | head -n1
 else
-  ERROR "$PKG_NAME failed to install. Inspect the preceding output for errors."
+  echo "[ERROR] $CHOICE failed to install."
   exit 1
 fi
