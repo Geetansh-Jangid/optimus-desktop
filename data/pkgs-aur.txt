@@ -1,7 +1,3 @@
-python-httpx-socks
-python-valkey-git
-rmlint
-winboat-bin
 wl-color-picker
 zorin-desktop-themes
 zorin-icon-themes
