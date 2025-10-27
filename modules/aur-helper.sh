@@ -56,8 +56,8 @@ done
 
 echo
 echo "Which AUR helper would you like to install (bin version)?"
-echo "1) paru-bin (Rust-based, lightweight)"
-echo "2) yay-bin (Go-based, stable)"
+echo "1) paru-bin (Rust-based, newer)"
+echo "2) yay-bin (Go-based, seasoned)"
 
 CHOICE=""
 while true; do

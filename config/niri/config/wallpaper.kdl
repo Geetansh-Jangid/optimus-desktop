@@ -1,0 +1,9 @@
+
+//spawn-sh-at-startup "swaybg -i /home/geetansh/.local/share/wallpapers/Gruvbox"
+//
+// Content for $HOME/.config/themes/<theme>/wallpaper.kdl
+// This script finds a random file in the target directory and sets it.
+spawn-sh-at-startup "
+    # Run the wallpaper setting script
+    ~/.local/bin/wallpaper.sh
+"
