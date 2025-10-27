@@ -6,8 +6,8 @@
 
 set -euo pipefail
 
-PACMAN_FILE="../data/pkgs-pacman.txt"
-AUR_FILE="../data/pkgs-aur.txt"
+PACMAN_FILE="data/pkgs-pacman.txt"
+AUR_FILE="data/pkgs-aur.txt"
 
 # ---- Detect AUR Helper ----
 if command -v paru >/dev/null 2>&1; then
