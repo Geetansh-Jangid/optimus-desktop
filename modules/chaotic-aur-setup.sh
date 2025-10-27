@@ -25,10 +25,11 @@ if grep -q "chaotic-aur" /etc/pacman.conf; then
   exit 0
 fi
 
-echo "🌀 Setting up Chaotic-AUR mirrorlist..."
+echo "Chaotic-AUR helps you to install famous AUR packages without building them by yourself : https://aur.chaotic.cx/"
 read -rp "➡️  Proceed to install Chaotic-AUR? [Y/n] " ans
 ans=${ans,,}
 [[ $ans == "n" ]] && echo "❌ Skipped Chaotic-AUR setup." && exit 0
+echo "🌀 Setting up Chaotic-AUR mirrorlist..."
 
 # ---- Import key ----
 echo "🔑 Importing Chaotic-AUR key..."
