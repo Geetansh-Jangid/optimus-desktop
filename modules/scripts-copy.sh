@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 # ======================================
-# Copy all files from bin/ to ~/.local/bin/
+# Optimus Desktop :: Sync Bin Scripts
+# Syncs local bin/ to ~/.local/bin/
 # ======================================
 
 set -euo pipefail
 
-SOURCE_DIR="bin"
-DEST_DIR="$HOME/.local/bin"
+SOURCE_DIR="bin/"
+DEST_DIR="$HOME/.local/bin/"
 
-echo "[INFO] Copying binaries from '$SOURCE_DIR' to '$DEST_DIR'..."
-
-# Create destination if it doesn't exist
+echo "[INFO] ==== Syncing bin scripts ===="
 mkdir -p "$DEST_DIR"
 
-# Copy recursively and overwrite
-cp -rT "$SOURCE_DIR" "$DEST_DIR"
+rsync -avh --progress "$SOURCE_DIR" "$DEST_DIR"
 
-echo "[SUCCESS] All binaries copied to ~/.local/bin/"
+echo "[SUCCESS] Scripts synced to ~/.local/bin/"
