@@ -9,3 +9,4 @@ rofi
 swaync
 niri
 rsync
+nodejs
