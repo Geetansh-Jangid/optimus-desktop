@@ -1,0 +1,15 @@
+/**
+ *
+ * Author : Aditya Shakya (adi1090x)
+ * Github : @adi1090x
+ * 
+ * Colors
+ **/
+* {
+    background:      #000000FF;  /* Pure Black */
+    background-alt:  #FFFFFFFF;  /* PURE WHITE */
+    foreground:      #000000FF;  /* PURE BLACK (To be readable on white alt-background) */
+    selected:        #7EF9FFFF;  /* Electric Cyan-Blue */
+    active:          #B0FF8CFF;  /* Lighter, almost lime-green */
+    urgent:          #FF6961FF;  /* Light, Eye-Catching Coral/Red */
+}

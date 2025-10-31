@@ -1,0 +1,307 @@
+* {
+  all: unset;
+  font-size: 14px;
+  font-family: "SF Pro Display";
+  transition: 200ms;
+}
+
+/* --- Color Palette Key ---
+ * #111111: Background (Deep Black - Kept)
+ * #FFFFFF: Foreground (Pure White for Max Contrast)
+ * #1A1A1A: Secondary Background/Surface (Slightly Lighter Black)
+ * #00C8FF: Primary Accent (Vibrant Electric Blue/Cyan)
+ * #FF4444: Critical/Red (Bright, High-Contrast Red)
+ */
+
+trough highlight {
+  background: #00C8FF; /* Primary Accent: Vibrant Electric Blue for general highlight */
+}
+
+scale {
+  margin: 0 7px;
+}
+
+scale trough {
+  margin: 0rem 1rem;
+  min-height: 8px;
+  min-width: 70px;
+  border-radius: 0px;
+}
+
+trough slider {
+  margin: -10px;
+  border-radius: 0px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+  transition: all 0.2s ease;
+  background-color: #FFFFFF; /* Pure White: Makes the slider highly visible */
+}
+
+trough slider:hover {
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), 0 0 8px #00C8FF; /* Vibrant Electric Blue glow */
+}
+
+trough {
+  background-color: #1A1A1A; /* Secondary Background: Slightly Lighter Black */
+}
+
+/* --- notifications --- */
+.notification-background {
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #1A1A1A; /* Secondary Background as border */
+  border-radius: 0px;
+  margin: 18px;
+  background: #111111; /* Deep Black (bg0) - Kept */
+  color: #FFFFFF;      /* Pure White: Maximum Foreground Contrast */
+  padding: 0;
+}
+
+.notification-background .notification {
+  padding: 7px;
+  border-radius: 0px;
+}
+
+.notification-background .notification.critical {
+  box-shadow: inset 0 0 7px 0 #FF4444; /* Bright Red: High-contrast critical glow */
+}
+
+.notification .notification-content {
+  margin: 7px;
+}
+
+.notification .notification-content overlay {
+  /* icons */
+  margin: 4px;
+}
+
+.notification-content .summary,
+.notification-content .time,
+.notification-content .body {
+  color: #FFFFFF;    /* Pure White: Maximum Foreground Contrast */
+}
+
+.notification > *:last-child > * {
+  min-height: 3.4em;
+}
+
+.notification-background .close-button {
+  margin: 7px;
+  padding: 2px;
+  border-radius: 0px;
+  color: #111111; /* Deep Black text on bright button */
+  background-color: #FF4444; /* Bright Red */
+}
+
+.notification-background .close-button:hover {
+  background-color: #00C8FF; /* Vibrant Electric Blue for hover */
+}
+
+.notification-background .close-button:active {
+  background-color: #00C8FF; /* Vibrant Electric Blue for active */
+}
+
+.notification .notification-action {
+  border-radius: 0px;
+  color: #FFFFFF;    /* Pure White: Maximum Foreground Contrast */
+  box-shadow: inset 0 0 0 1px #1A1A1A; /* Secondary Background as border */
+  margin: 4px;
+  padding: 8px;
+  font-size: 0.2rem;
+  background-color: #111111; /* Deep Black */
+}
+
+.notification .notification-action:hover {
+  background-color: #1A1A1A; /* Secondary Background for hover */
+}
+
+.notification .notification-action:active {
+  background-color: #333333; /* Dark Gray for active */
+}
+
+.notification.critical progress {
+  background-color: #FF4444; /* Bright Red */
+}
+
+.notification.low progress,
+.notification.normal progress {
+  background-color: #00C8FF; /* Vibrant Electric Blue */
+}
+
+.notification progress,
+.notification trough,
+.notification progressbar {
+  border-radius: 0px;
+  padding: 3px 0;
+}
+
+/* --- control center --- */
+.control-center {
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #111111; /* Deep Black (bg0) */
+  border-radius: 0px;
+  background-color: #111111; /* Deep Black (bg0) - Kept */
+  color: #FFFFFF;      /* Pure White: Maximum Foreground Contrast */
+  padding: 14px;
+}
+
+.control-center .notification-background {
+  border-radius: 0px;
+  box-shadow: inset 0 0 0 1px #1A1A1A; /* Secondary Background as border */
+  margin: 4px 10px;
+}
+
+.control-center .notification-background .notification.low {
+  opacity: 0.8;
+}
+
+.control-center .widget-title > label {
+  color: #FFFFFF;    /* Pure White */
+  font-size: 1.3em;
+}
+
+.control-center .widget-title button {
+  border-radius: 0px;
+  color: #FFFFFF;    /* Pure White */
+  background-color: #111111; /* Deep Black */
+  box-shadow: inset 0 0 0 1px #1A1A1A; /* Secondary Background as border */
+  padding: 8px;
+}
+
+.control-center .widget-title button:hover {
+  background-color: #1A1A1A; /* Secondary Background for hover */
+}
+
+.control-center .widget-title button:active {
+  background-color: #333333; /* Dark Gray for active */
+}
+
+.control-center .notification-group {
+  margin-top: 10px;
+}
+
+.control-center .notification-group:focus .notification-background {
+  background-color: #111111; /* Deep Black */
+}
+
+scrollbar slider {
+  margin: -3px;
+  opacity: 1; /* Made fully opaque */
+  background-color: #00C8FF; /* Vibrant Electric Blue */
+}
+
+scrollbar trough {
+  margin: 2px 0;
+}
+
+/* --- dnd --- */
+.widget-dnd {
+  margin-top: 5px;
+  border-radius: 0px;
+  font-size: 1.1rem;
+}
+
+.widget-dnd > switch {
+  font-size: initial;
+  border-radius: 0px;
+  background: #1A1A1A; /* Secondary Background */
+  box-shadow: none;
+}
+
+.widget-dnd > switch:checked {
+  background: #00C8FF; /* Vibrant Electric Blue when checked */
+}
+
+.widget-dnd > switch slider {
+  background: #FFFFFF; /* Pure White for slider */
+  border-radius: 0px;
+}
+
+/* --- mpris --- */
+.widget-mpris-player {
+  background: #111111; /* Deep Black */
+  border-radius: 0px;
+  color: #FFFFFF;      /* Pure White */
+}
+
+.mpris-overlay {
+  background-color: #111111; /* Deep Black */
+  opacity: 0.9;
+  padding: 15px 10px;
+}
+
+.widget-mpris-album-art {
+  -gtk-icon-size: 100px;
+  border-radius: 0px;
+  margin: 0 10px;
+}
+
+.widget-mpris-title,
+.widget-mpris-subtitle {
+  color: #FFFFFF;    /* Pure White */
+}
+
+.widget-mpris-title {
+  font-size: 1.2rem;
+}
+
+.widget-mpris-subtitle {
+  font-size: 1rem;
+}
+
+.widget-mpris button {
+  border-radius: 0px;
+  color: #00C8FF; /* Vibrant Electric Blue for icons/text */
+  margin: 0 5px;
+  padding: 2px;
+}
+
+.widget-mpris button image {
+  -gtk-icon-size: 1.8rem;
+}
+
+.widget-mpris button:hover {
+  background-color: #1A1A1A; /* Secondary Background for hover */
+}
+
+.widget-mpris button:active {
+  background-color: #333333; /* Dark Gray for active */
+}
+
+.widget-mpris button:disabled {
+  opacity: 0.3;
+  color: #1A1A1A; /* Secondary Background color for disabled icons */
+}
+
+.widget-menubar > box > .menu-button-bar > :last-child {
+  color: #FF4444; /* Bright Red */
+}
+
+.power-buttons button:hover,
+.powermode-buttons button:hover,
+.screenshot-buttons button:hover {
+  background: #1A1A1A; /* Secondary Background for hover */
+}
+
+.control-center .widget-label > label {
+  color: #FFFFFF;    /* Pure White */
+  font-size: 2rem;
+}
+
+.widget-volume {
+  padding: 1rem 0;
+}
+
+.widget-volume label {
+  color: #00C8FF; /* Vibrant Electric Blue for volume label */
+  padding: 0 1rem;
+}
+
+.widget-volume trough highlight {
+  background: #00C8FF; /* Vibrant Electric Blue for volume highlight */
+}
+
+.widget-backlight trough highlight {
+  background: #FFFF00; /* Vibrant Yellow for backlight highlight */
+}
+
+.widget-backlight label {
+  font-size: 1.5rem;
+  color: #FFFF00; /* Vibrant Yellow for backlight label */
+}
