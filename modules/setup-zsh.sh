@@ -19,7 +19,7 @@ gum style --border normal --margin "1 2" --padding "1 2" \
 # --- Define Paths ---
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 OHMYZSH_DIR="$HOME/.oh-my-zsh"
-ZSHRC_TEMPLATE_PATH="../zshrc"
+ZSHRC_TEMPLATE_PATH="../"
 ZSHRC_FINAL_PATH="$HOME/.zshrc"
 
 # -------------------------------------------------------------------------
