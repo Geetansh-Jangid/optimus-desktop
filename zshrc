@@ -1,4 +1,4 @@
-cat /home/geetansh/.config/niri/config/* > /home/geetansh/.config/niri/config.kdl
+cat /home/$USER/.config/niri/config/* > /home/$USER/.config/niri/config.kdl
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
