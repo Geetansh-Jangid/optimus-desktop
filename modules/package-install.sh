@@ -43,65 +43,63 @@ read_packages() {
 }
 
 # --- Confirm before proceeding ---
-gum confirm "Proceed with package installation?" || exit 0
-
----
-
-### 1. Interactive Pacman Installation
-
-if [[ -f "$PACMAN_FILE" ]]; then
-  gum style --foreground 45 "[INFO] Preparing to install pacman packages from $PACMAN_FILE..."
-  pacman_pkgs=($(read_packages "$PACMAN_FILE"))
-
-  if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
-    # Use gum style to display the command about to run
-    gum style --foreground 220 "➡️ Running: sudo pacman -S --needed ${pacman_pkgs[@]}"
-
-    # Run the installation *without* gum spin and *without* --noconfirm
-    # This ensures the standard sudo password prompt and pacman confirmation appear.
-    sudo pacman -S --needed "${pacman_pkgs[@]}"
-
-    if [[ $? -eq 0 ]]; then
-      gum style --foreground 82 "✔ Pacman packages installed successfully."
-    else
-      gum style --foreground 196 "❌ Pacman installation failed or was cancelled."
-    fi
-  else
-    gum style --foreground 240 "[INFO] No pacman packages to install."
-  fi
-else
-  gum style --foreground 208 "[WARN] Pacman list not found: $PACMAN_FILE"
+if ! gum confirm "Proceed with package installation?"; then
+  exit 0
 fi
 
----
+# --- Function for Pacman Installation ---
+install_pacman_packages() {
+  if [[ -f "$PACMAN_FILE" ]]; then
+    gum style --foreground 45 "[INFO] Preparing to install pacman packages from $PACMAN_FILE..."
+    pacman_pkgs=($(read_packages "$PACMAN_FILE"))
 
-### 2. Interactive AUR Installation
+    if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
+      gum style --foreground 220 "➡️ Running: sudo pacman -S --needed ${pacman_pkgs[*]}"
+      echo # Add a newline for cleaner separation
 
-if [[ -f "$AUR_FILE" ]]; then
-  gum style --foreground 45 "[INFO] Preparing to install AUR packages from $AUR_FILE..."
-  aur_pkgs=($(read_packages "$AUR_FILE"))
+      sudo pacman -S --needed "${pacman_pkgs[@]}"
 
-  if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
-    # Use gum style to display the command about to run
-    gum style --foreground 220 "➡️ Running: $AUR_HELPER -S --needed ${aur_pkgs[@]}"
-
-    # Run the installation *without* gum spin and *without* --noconfirm
-    # This allows the AUR helper to prompt for confirmation and password (if needed).
-    $AUR_HELPER -S --needed "${aur_pkgs[@]}"
-
-    if [[ $? -eq 0 ]]; then
-      gum style --foreground 82 "✔ AUR packages installed successfully."
+      if [[ $? -eq 0 ]]; then
+        gum style --foreground 82 "✔ Pacman packages installed successfully."
+      else
+        gum style --foreground 196 "❌ Pacman installation failed or was cancelled."
+      fi
     else
-      gum style --foreground 196 "❌ AUR installation failed or was cancelled."
+      gum style --foreground 240 "[INFO] No pacman packages to install."
     fi
   else
-    gum style --foreground 240 "[INFO] No AUR packages to install."
+    gum style --foreground 208 "[WARN] Pacman list not found: $PACMAN_FILE"
   fi
-else
-  gum style --foreground 208 "[WARN] AUR list not found: $AUR_FILE"
-fi
+}
 
----
+# --- Function for AUR Installation ---
+install_aur_packages() {
+  if [[ -f "$AUR_FILE" ]]; then
+    gum style --foreground 45 "[INFO] Preparing to install AUR packages from $AUR_FILE..."
+    aur_pkgs=($(read_packages "$AUR_FILE"))
+
+    if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
+      gum style --foreground 220 "➡️ Running: $AUR_HELPER -S --needed ${aur_pkgs[*]}"
+      echo # Add a newline for cleaner separation
+
+      $AUR_HELPER -S --needed "${aur_pkgs[@]}"
+
+      if [[ $? -eq 0 ]]; then
+        gum style --foreground 82 "✔ AUR packages installed successfully."
+      else
+        gum style --foreground 196 "❌ AUR installation failed or was cancelled."
+      fi
+    else
+      gum style --foreground 240 "[INFO] No AUR packages to install."
+    fi
+  else
+    gum style --foreground 208 "[WARN] AUR list not found: $AUR_FILE"
+  fi
+}
+
+# --- Main Execution ---
+install_pacman_packages
+install_aur_packages
 
 gum style --border double --padding "1 2" --border-foreground 82 \
   "🎉 Installation sequence finished!"
