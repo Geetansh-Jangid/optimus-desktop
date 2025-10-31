@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================
-# 🌐 Optimus Desktop :: Package Installer (GUM)
-# Installs pacman + AUR packages from text lists
+# 🌐 Optimus Desktop :: Package Installer (Interactive)
+# Installs pacman + AUR packages from text lists, requiring passwords/confirmations
 # =============================================
 
 set -euo pipefail
@@ -45,25 +45,27 @@ read_packages() {
 # --- Confirm before proceeding ---
 gum confirm "Proceed with package installation?" || exit 0
 
-# ------------------------------------------------------------------
-# --- MODIFICATION: Install Pacman Packages (Iterative) ---
-# ------------------------------------------------------------------
+---
+
+### 1. Interactive Pacman Installation
+
 if [[ -f "$PACMAN_FILE" ]]; then
-  gum style --foreground 45 "[INFO] Installing pacman packages from $PACMAN_FILE..."
+  gum style --foreground 45 "[INFO] Preparing to install pacman packages from $PACMAN_FILE..."
   pacman_pkgs=($(read_packages "$PACMAN_FILE"))
 
   if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
-    for pkg in "${pacman_pkgs[@]}"; do
-      gum spin --spinner line --title "Installing pacman package: **$pkg**" -- \
-        sudo pacman -S --needed --noconfirm "$pkg"
-      # Check the exit status of the pacman command
-      if [[ $? -eq 0 ]]; then
-        gum style --foreground 82 "✔ Successfully installed: $pkg"
-      else
-        gum style --foreground 196 "❌ Failed to install: $pkg"
-      fi
-    done
-    gum style --foreground 82 "✔ All Pacman packages processed."
+    # Use gum style to display the command about to run
+    gum style --foreground 220 "➡️ Running: sudo pacman -S --needed ${pacman_pkgs[@]}"
+
+    # Run the installation *without* gum spin and *without* --noconfirm
+    # This ensures the standard sudo password prompt and pacman confirmation appear.
+    sudo pacman -S --needed "${pacman_pkgs[@]}"
+
+    if [[ $? -eq 0 ]]; then
+      gum style --foreground 82 "✔ Pacman packages installed successfully."
+    else
+      gum style --foreground 196 "❌ Pacman installation failed or was cancelled."
+    fi
   else
     gum style --foreground 240 "[INFO] No pacman packages to install."
   fi
@@ -71,25 +73,27 @@ else
   gum style --foreground 208 "[WARN] Pacman list not found: $PACMAN_FILE"
 fi
 
-# ------------------------------------------------------------------
-# --- MODIFICATION: Install AUR Packages (Iterative) ---
-# ------------------------------------------------------------------
+---
+
+### 2. Interactive AUR Installation
+
 if [[ -f "$AUR_FILE" ]]; then
-  gum style --foreground 45 "[INFO] Installing AUR packages from $AUR_FILE..."
+  gum style --foreground 45 "[INFO] Preparing to install AUR packages from $AUR_FILE..."
   aur_pkgs=($(read_packages "$AUR_FILE"))
 
   if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
-    for pkg in "${aur_pkgs[@]}"; do
-      gum spin --spinner line --title "Installing AUR package: **$pkg** via $AUR_HELPER" -- \
-        $AUR_HELPER -S --needed --noconfirm "$pkg"
-      # Check the exit status of the AUR helper command
-      if [[ $? -eq 0 ]]; then
-        gum style --foreground 82 "✔ Successfully installed: $pkg"
-      else
-        gum style --foreground 196 "❌ Failed to install: $pkg"
-      fi
-    done
-    gum style --foreground 82 "✔ All AUR packages processed."
+    # Use gum style to display the command about to run
+    gum style --foreground 220 "➡️ Running: $AUR_HELPER -S --needed ${aur_pkgs[@]}"
+
+    # Run the installation *without* gum spin and *without* --noconfirm
+    # This allows the AUR helper to prompt for confirmation and password (if needed).
+    $AUR_HELPER -S --needed "${aur_pkgs[@]}"
+
+    if [[ $? -eq 0 ]]; then
+      gum style --foreground 82 "✔ AUR packages installed successfully."
+    else
+      gum style --foreground 196 "❌ AUR installation failed or was cancelled."
+    fi
   else
     gum style --foreground 240 "[INFO] No AUR packages to install."
   fi
@@ -97,5 +101,7 @@ else
   gum style --foreground 208 "[WARN] AUR list not found: $AUR_FILE"
 fi
 
+---
+
 gum style --border double --padding "1 2" --border-foreground 82 \
-  "🎉 All packages processed successfully!"
+  "🎉 Installation sequence finished!"
