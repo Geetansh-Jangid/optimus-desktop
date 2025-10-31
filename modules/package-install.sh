@@ -45,15 +45,25 @@ read_packages() {
 # --- Confirm before proceeding ---
 gum confirm "Proceed with package installation?" || exit 0
 
-# --- Install Pacman Packages ---
+# ------------------------------------------------------------------
+# --- MODIFICATION: Install Pacman Packages (Iterative) ---
+# ------------------------------------------------------------------
 if [[ -f "$PACMAN_FILE" ]]; then
   gum style --foreground 45 "[INFO] Installing pacman packages from $PACMAN_FILE..."
   pacman_pkgs=($(read_packages "$PACMAN_FILE"))
 
   if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
-    gum spin --spinner line --title "Installing pacman packages..." -- \
-      sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
-    gum style --foreground 82 "✔ Pacman packages installed successfully."
+    for pkg in "${pacman_pkgs[@]}"; do
+      gum spin --spinner line --title "Installing pacman package: **$pkg**" -- \
+        sudo pacman -S --needed --noconfirm "$pkg"
+      # Check the exit status of the pacman command
+      if [[ $? -eq 0 ]]; then
+        gum style --foreground 82 "✔ Successfully installed: $pkg"
+      else
+        gum style --foreground 196 "❌ Failed to install: $pkg"
+      fi
+    done
+    gum style --foreground 82 "✔ All Pacman packages processed."
   else
     gum style --foreground 240 "[INFO] No pacman packages to install."
   fi
@@ -61,15 +71,25 @@ else
   gum style --foreground 208 "[WARN] Pacman list not found: $PACMAN_FILE"
 fi
 
-# --- Install AUR Packages ---
+# ------------------------------------------------------------------
+# --- MODIFICATION: Install AUR Packages (Iterative) ---
+# ------------------------------------------------------------------
 if [[ -f "$AUR_FILE" ]]; then
   gum style --foreground 45 "[INFO] Installing AUR packages from $AUR_FILE..."
   aur_pkgs=($(read_packages "$AUR_FILE"))
 
   if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
-    gum spin --spinner line --title "Installing AUR packages via $AUR_HELPER..." -- \
-      $AUR_HELPER -S --needed --noconfirm "${aur_pkgs[@]}"
-    gum style --foreground 82 "✔ AUR packages installed successfully."
+    for pkg in "${aur_pkgs[@]}"; do
+      gum spin --spinner line --title "Installing AUR package: **$pkg** via $AUR_HELPER" -- \
+        $AUR_HELPER -S --needed --noconfirm "$pkg"
+      # Check the exit status of the AUR helper command
+      if [[ $? -eq 0 ]]; then
+        gum style --foreground 82 "✔ Successfully installed: $pkg"
+      else
+        gum style --foreground 196 "❌ Failed to install: $pkg"
+      fi
+    done
+    gum style --foreground 82 "✔ All AUR packages processed."
   else
     gum style --foreground 240 "[INFO] No AUR packages to install."
   fi
