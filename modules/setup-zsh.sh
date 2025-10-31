@@ -106,11 +106,11 @@ if [ ! -f "$ZSHRC_TEMPLATE_PATH" ]; then
 fi
 
 # 5a. Copy the template to $HOME/.zshrc
-gum spin --spinner point --title "Copying template to $ZSHRC_FINAL_PATH..." -- \
+gum spin --spinner dot --title "Copying template to $ZSHRC_FINAL_PATH..." -- \
   cp "$ZSHRC_TEMPLATE_PATH" "$ZSHRC_FINAL_PATH"
 
 # 5b. Use sed to replace the ZSH_THEME and plugins line in the new .zshrc
-gum spin --spinner point --title "Updating ZSH_THEME and plugins configuration..." -- \
+gum spin --spinner dot --title "Updating ZSH_THEME and plugins configuration..." -- \
   bash -c "
     # Set theme to p10k
     sed -i 's/^ZSH_THEME=.*$/ZSH_THEME=\"powerlevel10k\/powerlevel10k\"/' \"$ZSHRC_FINAL_PATH\";
@@ -119,7 +119,7 @@ gum spin --spinner point --title "Updating ZSH_THEME and plugins configuration..
   "
 # 5c. Ensure p10k is sourced at the end
 if ! grep -q "source ~/\.p10k\.zsh" "$ZSHRC_FINAL_PATH"; then
-  gum spin --spinner point --title "Ensuring Powerlevel10k sourcing is present..." -- \
+  gum spin --spinner dot --title "Ensuring Powerlevel10k sourcing is present..." -- \
     bash -c "
       echo -e '\n# --- Powerlevel10k Sourcing ---' | tee -a \"$ZSHRC_FINAL_PATH\" > /dev/null;
       echo '# To customize prompt, run \`p10k configure\` or edit ~/.p10k.zsh.' | tee -a \"$ZSHRC_FINAL_PATH\" > /dev/null;
