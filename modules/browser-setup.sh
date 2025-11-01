@@ -1,44 +1,44 @@
-#!/usr/bin/env bash
-# ===========================================
-# Optimus Desktop: Browser Installer (GUM Edition)
-# ===========================================
-# Supports Zen Browser & Brave Browser
-# Detects AUR helper (paru/yay) and installs using
-# either Chaotic AUR or user's AUR helper.
-# ===========================================
+#!/bin/bash
 
-set -euo pipefail
+# Assume AUR_HELPER and BROWSER variables are set earlier in the script
+# Example values:
+# AUR_HELPER="yay"
+# BROWSER="firefox"
 
-# --- Header ---
-echo "🌐 Optimus Desktop :: Browser Installer" | gum style --foreground 212 --bold
-echo "------------------------------------------" | gum style --foreground 250
+# --- Choose Installation Source ---
+SOURCE_CHOICE=$(gum choose --cursor "👉 " \
+  "Chaotic AUR (Prebuilt binaries)" \
+  "AUR Helper ($AUR_HELPER)" \
+  --header "Choose installation source:")
 
-# --- Detect AUR Helper ---
-detect_aur_helper() {
-  if command -v paru &>/dev/null; then
-    echo "paru"
-  elif command -v yay &>/dev/null; then
-    echo "yay"
-  else
-    echo ""
-  fi
-}
+# --- Confirm & Proceed ---
+if ! gum confirm "🚀 Ready to install $BROWSER using ${SOURCE_CHOICE%% *}? Continue?"; then
+  gum style --foreground 196 "❌ Installation cancelled."
+  exit 0
+fi
 
-AUR_HELPER=$(detect_aur_helper)
+# --- Preload sudo credentials cleanly ---
+gum style --foreground 244 "🔑 Checking sudo access (you may be prompted for your password)..."
+sudo -v
 
-if [[ -z "$AUR_HELPER" ]]; then
-  echo "[ERROR] No AUR helper found (paru or yay)." | gum style --foreground 9 --bold
-  echo "Please install one first, then re-run this script." | gum style --foreground 11
+# --- Installation Logic ---
+if [[ "$SOURCE_CHOICE" == "Chaotic AUR (Prebuilt binaries)" ]]; then
+  gum style --foreground 45 "Installing $BROWSER via Chaotic AUR..."
+  sudo pacman -S --noconfirm "$BROWSER"
+else
+  gum style --foreground 45 "Installing $BROWSER via $AUR_HELPER..."
+  "$AUR_HELPER" -S --noconfirm "$BROWSER"
+fi
+
+# --- Check for errors ---
+if [[ $? -ne 0 ]]; then
+  gum style --foreground 196 --bold "❌ An error occurred during installation."
   exit 1
 fi
 
-# --- Choose Browser ---
-BROWSER_CHOICE=$(gum choose --cursor "👉 " "Zen Browser" "Brave Browser" --header "Choose your browser:")
-
-case "$BROWSER_CHOICE" in
-"Zen Browser") BROWSER="zen-browser-bin" ;;
-"Brave Browser") BROWSER="brave-bin" ;;
-esac
+# --- Done ---
+gum style --foreground 82 --bold "✅ $BROWSER installed successfully!"
+gum style --foreground 244 "You can now launch it from your applications menu."
 
 # --- Choose Installation Source ---
 SOURCE_CHOICE=$(gum choose --cursor "👉 " \

@@ -101,15 +101,14 @@ run_install_flow() {
   for script_basename in "${EXECUTION_ORDER[@]}"; do
     local friendly_name
     friendly_name=$(echo "$script_basename" | sed -e 's/\.sh$//' -e 's/-/ /g' -e 's/\b\(.\)/\u\1/g')
-    
+
     local desc="${MODULE_DESCRIPTIONS[$script_basename]}"
     local impact="${MODULE_IMPACTS[$script_basename]}"
 
-    # --- ❗ UI FIX: Using gum format for responsive text boxes ---
     local info_box_content
     info_box_content=$(printf '# %s\n\n**Function:** %s\n\n**Impact if Skipped:** %s' \
       "$friendly_name" "$desc" "$impact")
-    
+
     echo "$info_box_content" | gum format -t markdown
 
     if gum confirm "Do you want to run the '$friendly_name' module?"; then
@@ -133,16 +132,16 @@ run_upgrade_flow() {
     "config-copy.sh"
     "scripts-copy.sh"
   )
-  
+
   gum style --margin "1 2" "This will run the following modules to update your system:"
   for module in "${UPGRADE_MODULES[@]}"; do
-      gum style --margin "0 4" "- $module"
+    gum style --margin "0 4" "- $module"
   done
-  
+
   if ! gum confirm "Proceed with the upgrade?"; then
     exit 0
   fi
-  
+
   for module in "${UPGRADE_MODULES[@]}"; do
     run_module "$MODULES_DIR/$module"
   done
@@ -165,59 +164,55 @@ main() {
   # --- Argument Parsing ---
   if [[ $# -gt 0 ]]; then
     case "$1" in
-      --install)
-        MODE="install"
-        ;;
-      --upgrade)
-        MODE="upgrade"
-        ;;
-      --run-module)
-        if [[ -z "$2" ]]; then
-          gum style --foreground 196 "ERROR: --run-module requires a module name."
-          show_help
-        fi
-        MODE="single"
-        SINGLE_MODULE="$2"
-        ;;
-      --help)
+    --install)
+      MODE="install"
+      ;;
+    --upgrade)
+      MODE="upgrade"
+      ;;
+    --run-module)
+      if [[ -z "$2" ]]; then
+        gum style --foreground 196 "ERROR: --run-module requires a module name."
         show_help
-        ;;
-      *)
-        gum style --foreground 196 "ERROR: Unknown flag '$1'."
-        show_help
-        ;;
+      fi
+      MODE="single"
+      SINGLE_MODULE="$2"
+      ;;
+    --help)
+      show_help
+      ;;
+    *)
+      gum style --foreground 196 "ERROR: Unknown flag '$1'."
+      show_help
+      ;;
     esac
   fi
 
   # --- Prepare modules ---
-  if ! gum spin --spinner line --title "Preparing modules..." -- bash -c "chmod +x '$MODULES_DIR'/*.sh"; then
-      gum style --foreground 196 "ERROR: Failed to make modules executable."
-      exit 1
+  gum style --foreground 45 "🔧 Making modules executable..."
+  if ! chmod +x "$MODULES_DIR"/*.sh; then
+    gum style --foreground 196 "ERROR: Failed to make modules executable."
+    exit 1
   fi
 
   # --- Execute based on mode ---
   case "$MODE" in
-    install)
-      run_install_flow
-      ;;
-    upgrade)
-      run_upgrade_flow
-      ;;
-    single)
-      if [[ -f "$MODULES_DIR/$SINGLE_MODULE" ]]; then
-        run_module "$MODULES_DIR/$SINGLE_MODULE"
-      else
-        gum style --foreground 196 "ERROR: Module '$SINGLE_MODULE' not found."
-        show_help
-      fi
-      ;;
+  install)
+    run_install_flow
+    ;;
+  upgrade)
+    run_upgrade_flow
+    ;;
+  single)
+    if [[ -f "$MODULES_DIR/$SINGLE_MODULE" ]]; then
+      run_module "$MODULES_DIR/$SINGLE_MODULE"
+    else
+      gum style --foreground 196 "ERROR: Module '$SINGLE_MODULE' not found."
+      show_help
+    fi
+    ;;
   esac
-}
+} # <--- CORRECT: The main function definition ends here.
 
 # --- Run the main function with all command-line arguments ---
-main "$@"
-  gum style --border hidden --margin "1 0" "--------------------------------------------------"
-}
-
-# --- Run the main function ---
-main
+main "$@" # <--- CORRECT: Call the function at the very end of the script.
