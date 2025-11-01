@@ -35,7 +35,7 @@ gum style --border normal --margin "1 2" --padding "1 2" \
 # from the [extra] repository.
 # -------------------------------------------------------------------------
 declare -A EDITORS=(
-  ["Zed :: A high-performance, multiplayer code editor (Official Repo)"]="zed:pacman:zed"
+  ["Zed :: A high-performance, multiplayer code editor (Official Repo)"]="zed:pacman:zeditor"
   ["Visual Studio Code :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin:aur:code"
   ["Neovim :: Powerful, keyboard-centric text editor (Official Repo)"]="nvim:pacman:nvim"
 )
