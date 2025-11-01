@@ -15,14 +15,14 @@ gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
   "🌐 Optimus Desktop :: Code Editor Selection" \
   "──────────────────────────────────────────" \
-  "Select your preferred code editor to install (using pacman)."
+  "Select your preferred code editor to install (using pacman/aur)."
 
 # -------------------------------------------------------------------------
 # ---- Define Options ----
 # -------------------------------------------------------------------------
 # Map descriptive name to the actual Arch/AUR package name
 declare -A EDITORS=(
-  ["zed-editor-bin :: High-performance, collaborative editor (AUR)"]="zed-editor-bin"
+  ["zed :: High-performance, collaborative editor (pacman)"]="zed"
   ["visual-studio-code-bin :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin"
   ["nvim :: Powerful, keyboard-centric text editor (Official Repo)"]="nvim"
 )
