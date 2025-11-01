@@ -79,10 +79,10 @@ install_aur_packages() {
     aur_pkgs=($(read_packages "$AUR_FILE"))
 
     if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
-      gum style --foreground 220 "➡️ Running: $AUR_HELPER -S --needed ${aur_pkgs[*]}"
+      gum style --foreground 220 "➡️ Running: $AUR_HELPER -S --noconfirm --needed ${aur_pkgs[*]}"
       echo # Add a newline for cleaner separation
 
-      $AUR_HELPER -S --needed "${aur_pkgs[@]}"
+      $AUR_HELPER -S --noconfirm --needed "${aur_pkgs[@]}"
 
       if [[ $? -eq 0 ]]; then
         gum style --foreground 82 "✔ AUR packages installed successfully."
