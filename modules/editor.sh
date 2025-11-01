@@ -10,21 +10,33 @@ if ! command -v gum &>/dev/null; then
   exit 1
 fi
 
+# --- Helper Function: Detect available AUR helper ---
+detect_aur_helper() {
+  if command -v paru &>/dev/null; then
+    echo "paru"
+  elif command -v yay &>/dev/null; then
+    echo "yay"
+  else
+    echo ""
+  fi
+}
+
 # --- Header ---
 gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
   "🌐 Optimus Desktop :: Code Editor Selection" \
   "──────────────────────────────────────────" \
-  "Select your preferred code editor to install (using pacman/aur)."
+  "Select your preferred code editor to install."
 
 # -------------------------------------------------------------------------
-# ---- Define Options ----
+# ---- Define Options (with metadata) ----
+# Format: "Description"="package_name:install_type:binary_name"
+# install_type can be 'pacman' or 'aur'
 # -------------------------------------------------------------------------
-# Map descriptive name to the actual Arch/AUR package name
 declare -A EDITORS=(
-  ["zed :: High-performance, collaborative editor (pacman)"]="zed"
-  ["visual-studio-code-bin :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin"
-  ["nvim :: Powerful, keyboard-centric text editor (Official Repo)"]="nvim"
+  ["Zed :: A high-performance, multiplayer code editor (Official Repo)"]="zed:pacman:zed"
+  ["Visual Studio Code :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin:aur:code"
+  ["Neovim :: Powerful, keyboard-centric text editor (Official Repo)"]="nvim:pacman:nvim"
 )
 
 # Prepare choices array for gum choose
@@ -39,9 +51,15 @@ SELECTED_DESC=$(gum choose \
   "${CHOICES[@]}" \
   --header "Select one:")
 
-# Extract the package name from the associative array
-# The actual package name is the value associated with the descriptive key
-PACKAGE_TO_INSTALL="${EDITORS["$SELECTED_DESC"]}"
+# If the user cancels the selection, exit gracefully
+if [[ -z "$SELECTED_DESC" ]]; then
+  gum style --foreground 240 "[INFO] No editor selected. Exiting."
+  exit 0
+fi
+
+# --- Parse the selected editor's metadata ---
+EDITOR_DATA="${EDITORS[$SELECTED_DESC]}"
+IFS=':' read -r PACKAGE_TO_INSTALL INSTALL_TYPE BINARY_NAME <<<"$EDITOR_DATA"
 
 gum style --foreground 212 "[INFO] Selected package: $PACKAGE_TO_INSTALL"
 
@@ -53,23 +71,31 @@ fi
 # -------------------------------------------------------------------------
 # ---- Installation ----
 # -------------------------------------------------------------------------
+INSTALL_CMD=""
+AUR_HELPER=$(detect_aur_helper)
 
-# Installation command check
-INSTALL_CMD="sudo pacman -S --needed --noconfirm"
-
-# If the package is an AUR package, we need an AUR helper (assuming 'paru' is available)
-if [[ "$PACKAGE_TO_INSTALL" == *"bin"* ]]; then
-  if command -v paru &>/dev/null; then
-    INSTALL_CMD="paru -S --needed --noconfirm"
-    gum style --foreground 45 "[NOTE] Using 'paru' as AUR helper for '$PACKAGE_TO_INSTALL'."
+if [[ "$INSTALL_TYPE" == "aur" ]]; then
+  if [[ -n "$AUR_HELPER" ]]; then
+    INSTALL_CMD="$AUR_HELPER -S --needed --noconfirm"
+    gum style --foreground 45 "[NOTE] Using '$AUR_HELPER' as AUR helper for '$PACKAGE_TO_INSTALL'."
   else
-    gum style --foreground 196 "❌ ERROR: '$PACKAGE_TO_INSTALL' is an AUR package, but 'paru' (or similar helper) was not found."
-    gum style --foreground 208 "Please install an AUR helper first, or manually install '$PACKAGE_TO_INSTALL'."
+    gum style --foreground 196 "❌ ERROR: '$PACKAGE_TO_INSTALL' is an AUR package, but no AUR helper (paru/yay) was found."
+    gum style --foreground 208 "Please run the 'aur-helper.sh' module first."
     exit 1
   fi
+elif [[ "$INSTALL_TYPE" == "pacman" ]]; then
+  INSTALL_CMD="sudo pacman -S --needed --noconfirm"
+else
+  gum style --foreground 196 "❌ ERROR: Unknown installation type '$INSTALL_TYPE' for package '$PACKAGE_TO_INSTALL'."
+  exit 1
 fi
 
 gum style --foreground 45 "[INFO] Starting installation..."
+
+# Pre-cache sudo if needed, to prevent getting stuck in the spinner
+if [[ "$INSTALL_TYPE" == "pacman" ]]; then
+  sudo -v
+fi
 
 gum spin --spinner line --title "Installing $PACKAGE_TO_INSTALL..." -- \
   bash -c "$INSTALL_CMD '$PACKAGE_TO_INSTALL'"
@@ -77,14 +103,10 @@ gum spin --spinner line --title "Installing $PACKAGE_TO_INSTALL..." -- \
 # -------------------------------------------------------------------------
 # ---- Final Verification ----
 # -------------------------------------------------------------------------
-
-# Remove the '-bin' suffix for the final verification check if necessary
-BIN_NAME="${PACKAGE_TO_INSTALL//-bin/}"
-
-if command -v "$BIN_NAME" &>/dev/null || command -v code &>/dev/null || command -v nvim &>/dev/null; then
+if command -v "$BINARY_NAME" &>/dev/null; then
   gum style --foreground 82 --bold "✅ Successfully installed $PACKAGE_TO_INSTALL!"
-  gum style --foreground 240 "You can now launch it."
+  gum style --foreground 240 "You can now launch it by running '$BINARY_NAME'."
 else
-  gum style --foreground 196 "❌ Installation of $PACKAGE_TO_INSTALL failed or binary not found."
+  gum style --foreground 196 "❌ Installation of $PACKAGE_TO_INSTALL failed or its command '$BINARY_NAME' was not found."
   exit 1
 fi
