@@ -22,11 +22,11 @@ readonly EXECUTION_ORDER=(
 # --- Module Metadata ---
 declare -A MODULE_DESCRIPTIONS
 MODULE_DESCRIPTIONS=(
-  ["aur-helper.sh"]="Installs a helper program (like 'paru' or 'yay') to easily build and install software from the Arch User Repository (AUR)."
+  ["aur-helper.sh"]="Installs a helper program ('paru' or 'yay') to easily build and install software from the Arch User Repository (AUR)."
   ["chaotic-aur-setup.sh"]="Configures the Chaotic-AUR, a third-party repository that provides pre-built binary packages for many popular AUR applications, saving you significant compilation time."
   ["package-install.sh"]="Reads package lists from the 'data/' directory and installs all core applications, utilities, fonts, and system libraries using the '--needed' flag to prevent re-installing existing packages."
-  ["editor.sh"]="Prompts you to select and install a code editor like VS Code or Neovim."
-  ["browser-setup.sh"]="Prompts you to select and install a web browser like Brave."
+  ["editor.sh"]="Prompts you to select and install a code editor."
+  ["browser-setup.sh"]="Prompts you to select and install a web browser."
   ["setup-zsh.sh"]="Installs and configures the Zsh shell with Oh My Zsh, Powerlevel10k theme, and useful plugins (like auto-suggestions) for a powerful terminal experience."
   ["config-copy.sh"]="Copies all personal configuration files (dotfiles) from the 'config/' directory to their correct locations in your home directory (~/.config/). This applies your custom settings to applications."
   ["scripts-copy.sh"]="Copies custom helper scripts from the 'bin/' directory to ~/.local/bin/, making them available as commands in your terminal."

@@ -29,9 +29,10 @@ gum style --border normal --margin "1 2" --padding "1 2" \
   "Select your preferred code editor to install."
 
 # -------------------------------------------------------------------------
-# ---- Define Options (with metadata) ----
+# ---- Define Options (with corrected metadata) ----
 # Format: "Description"="package_name:install_type:binary_name"
-# install_type can be 'pacman' or 'aur'
+# ❗ FIXED: Zed is now correctly identified as an official 'pacman' package
+# from the [extra] repository.
 # -------------------------------------------------------------------------
 declare -A EDITORS=(
   ["Zed :: A high-performance, multiplayer code editor (Official Repo)"]="zed:pacman:zed"
@@ -51,7 +52,6 @@ SELECTED_DESC=$(gum choose \
   "${CHOICES[@]}" \
   --header "Select one:")
 
-# If the user cancels the selection, exit gracefully
 if [[ -z "$SELECTED_DESC" ]]; then
   gum style --foreground 240 "[INFO] No editor selected. Exiting."
   exit 0
@@ -69,44 +69,47 @@ if ! gum confirm "Proceed to install $PACKAGE_TO_INSTALL?"; then
 fi
 
 # -------------------------------------------------------------------------
-# ---- Installation ----
+# ---- Installation (with conditional spinner logic) ----
 # -------------------------------------------------------------------------
-INSTALL_CMD=""
-AUR_HELPER=$(detect_aur_helper)
+INSTALL_SUCCESS=false
 
 if [[ "$INSTALL_TYPE" == "aur" ]]; then
+  AUR_HELPER=$(detect_aur_helper)
   if [[ -n "$AUR_HELPER" ]]; then
-    INSTALL_CMD="$AUR_HELPER -S --needed --noconfirm"
-    gum style --foreground 45 "[NOTE] Using '$AUR_HELPER' as AUR helper for '$PACKAGE_TO_INSTALL'."
+    gum style --foreground 45 "[NOTE] Using '$AUR_HELPER' for AUR installation..."
+    # A spinner is appropriate here because AUR builds can be slow.
+    if gum spin --spinner line --title "Installing $PACKAGE_TO_INSTALL via $AUR_HELPER..." -- \
+      "$AUR_HELPER" -S --needed --noconfirm "$PACKAGE_TO_INSTALL"; then
+      INSTALL_SUCCESS=true
+    fi
   else
     gum style --foreground 196 "❌ ERROR: '$PACKAGE_TO_INSTALL' is an AUR package, but no AUR helper (paru/yay) was found."
-    gum style --foreground 208 "Please run the 'aur-helper.sh' module first."
     exit 1
   fi
+
 elif [[ "$INSTALL_TYPE" == "pacman" ]]; then
-  INSTALL_CMD="sudo pacman -S --needed --noconfirm"
+  gum style --foreground 45 "[INFO] Running pacman. You will see the live output below."
+  echo # Add a newline for cleaner separation
+
+  # --- NO SPINNER for pacman ---
+  # We run pacman directly to show all its output: dependency lists,
+  # download progress, and any potential errors. This provides full transparency.
+  if sudo pacman -S --needed "$PACKAGE_TO_INSTALL"; then
+    INSTALL_SUCCESS=true
+  fi
 else
   gum style --foreground 196 "❌ ERROR: Unknown installation type '$INSTALL_TYPE' for package '$PACKAGE_TO_INSTALL'."
   exit 1
 fi
 
-gum style --foreground 45 "[INFO] Starting installation..."
-
-# Pre-cache sudo if needed, to prevent getting stuck in the spinner
-if [[ "$INSTALL_TYPE" == "pacman" ]]; then
-  sudo -v
-fi
-
-gum spin --spinner line --title "Installing $PACKAGE_TO_INSTALL..." -- \
-  bash -c "$INSTALL_CMD '$PACKAGE_TO_INSTALL'"
-
 # -------------------------------------------------------------------------
 # ---- Final Verification ----
 # -------------------------------------------------------------------------
-if command -v "$BINARY_NAME" &>/dev/null; then
+if [[ "$INSTALL_SUCCESS" = true ]] && command -v "$BINARY_NAME" &>/dev/null; then
   gum style --foreground 82 --bold "✅ Successfully installed $PACKAGE_TO_INSTALL!"
   gum style --foreground 240 "You can now launch it by running '$BINARY_NAME'."
 else
   gum style --foreground 196 "❌ Installation of $PACKAGE_TO_INSTALL failed or its command '$BINARY_NAME' was not found."
+  gum style --foreground 208 "Please review the output above for error messages."
   exit 1
 fi
