@@ -29,11 +29,24 @@ for pkg in "${DEPS[@]}"; do
   fi
 done
 
+#!/bin/bash
+
+# -------------------------------------------------------------------------
+# ---- Check for required packages ----
+# -------------------------------------------------------------------------
+REQUIRED_PACKAGES=(gum)
+MISSING=()
+for pkg in "${REQUIRED_PACKAGES[@]}"; do
+  if ! command -v "$pkg" &>/dev/null; then
+    MISSING+=("$pkg")
+  fi
+done
+
 if ((${#MISSING[@]})); then
   gum style --foreground 208 "⚠ Missing required packages: ${MISSING[*]}"
   if gum confirm "Install them now?"; then
-    gum spin --spinner line --title "Installing dependencies..." -- \
-      sudo pacman -Sy --needed --noconfirm "${MISSING[@]}"
+    echo "Installing dependencies..."
+    sudo pacman -Sy --needed --noconfirm "${MISSING[@]}"
     gum style --foreground 82 "✔ Dependencies installed successfully."
   else
     gum style --foreground 196 "❌ Required dependencies are missing. Exiting."
@@ -52,7 +65,7 @@ if grep -q "chaotic-aur" /etc/pacman.conf; then
 fi
 
 # -------------------------------------------------------------------------
-# ---- User Confirmation (FIXED: Removed --header flag) ----
+# ---- User Confirmation ----
 # -------------------------------------------------------------------------
 CHOICE_PROMPT="Chaotic-AUR Setup\nChaotic-AUR allows you to install popular AUR packages without building them yourself.\nDo you want to proceed with the installation?"
 
@@ -66,31 +79,31 @@ gum style --foreground 45 "[INFO] Setting up Chaotic-AUR mirrorlist..."
 # -------------------------------------------------------------------------
 # ---- Import key ----
 # -------------------------------------------------------------------------
-gum spin --spinner dot --title "🔑 Importing Chaotic-AUR key (3056513887B78AEB)..." -- \
-  sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+echo "🔑 Importing Chaotic-AUR key (3056513887B78AEB)..."
+sudo pacman-key --recv-key 3056513887B78AEB --keyserver hkps://keyserver.ubuntu.com
 
-gum spin --spinner dot --title "✍️ Signing key locally..." -- \
-  sudo pacman-key --lsign-key 3056513887B78AEB
+echo "✍️ Signing key locally..."
+sudo pacman-key --lsign-key 3056513887B78AEB
 
 # -------------------------------------------------------------------------
 # ---- Install keyring and mirrorlist ----
 # -------------------------------------------------------------------------
-gum spin --spinner line --title "📦 Installing keyring and mirrorlist packages..." -- \
-  bash -c "sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+echo "📦 Installing keyring and mirrorlist packages..."
+sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
 # -------------------------------------------------------------------------
 # ---- Add repo if not exists ----
 # -------------------------------------------------------------------------
 if ! grep -q "\[chaotic-aur\]" /etc/pacman.conf; then
-  gum spin --spinner minidot --title "📝 Adding [chaotic-aur] repository to /etc/pacman.conf..." -- \
-    bash -c "echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf >/dev/null"
+  echo "📝 Adding [chaotic-aur] repository to /etc/pacman.conf..."
+  echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf >/dev/null
 fi
 
 # -------------------------------------------------------------------------
 # ---- Refresh databases ----
 # -------------------------------------------------------------------------
-gum spin --spinner globe --title "🔄 Refreshing package databases..." -- \
-  sudo pacman -Syy
+echo "🔄 Refreshing package databases..."
+sudo pacman -Syy
 
 # -------------------------------------------------------------------------
 # ---- Final Message ----
