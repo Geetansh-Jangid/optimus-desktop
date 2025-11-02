@@ -6,6 +6,11 @@
 
 set -euo pipefail
 
+if ! command -v gum &>/dev/null; then
+  echo "❌ gum not found. Installing it first (sudo pacman -S gum)."
+  sudo pacman -S gum
+fi
+
 # --- Constants & Global Variables ---
 readonly MODULES_DIR="$(dirname "$0")/modules"
 readonly EXECUTION_ORDER=(
