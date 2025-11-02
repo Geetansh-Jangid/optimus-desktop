@@ -10,12 +10,6 @@ set -euo pipefail
 PACMAN_FILE="data/pkgs-pacman.txt"
 AUR_FILE="data/pkgs-aur.txt"
 
-# --- Require gum ---
-if ! command -v gum &>/dev/null; then
-  echo "❌ gum not found. Please install it first (sudo pacman -S gum)."
-  exit 1
-fi
-
 # --- Fancy Header ---
 gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \

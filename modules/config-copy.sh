@@ -5,12 +5,6 @@
 
 set -euo pipefail
 
-# --- Require gum ---
-if ! command -v gum &>/dev/null; then
-  echo "❌ gum not found. Please install it first (sudo pacman -S gum)."
-  exit 1
-fi
-
 # --- Define Paths ---
 SOURCE_DIR="config/"
 DEST_DIR="$HOME/.config/"

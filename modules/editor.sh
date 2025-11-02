@@ -4,12 +4,6 @@
 # =======================================================
 set -euo pipefail
 
-# --- Require gum ---
-if ! command -v gum &>/dev/null; then
-  echo "❌ gum not found. Please install it first (sudo pacman -S gum)."
-  exit 1
-fi
-
 # --- Helper Function: Detect available AUR helper ---
 detect_aur_helper() {
   if command -v paru &>/dev/null; then
