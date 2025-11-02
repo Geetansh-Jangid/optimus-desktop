@@ -2,3 +2,4 @@ wl-color-picker
 zorin-desktop-themes-git
 zorin-icon-themes
 apple-fonts
+volantes-cursors
