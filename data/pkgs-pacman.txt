@@ -22,3 +22,4 @@ noto-fonts-cjk
 thunar
 thunar-archive-plugin
 tumbler
+lazygit
