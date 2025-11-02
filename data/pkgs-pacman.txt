@@ -19,3 +19,6 @@ gum
 swww
 noto-fonts
 noto-fonts-cjk
+thunar
+thunar-archive-plugin
+tumbler
