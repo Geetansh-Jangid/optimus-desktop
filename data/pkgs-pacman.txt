@@ -10,7 +10,7 @@ swaync
 niri
 rsync
 nodejs
-ttf-noto-nerd
+ttf-roboto-mono-nerd
 pavucontrol
 s-tui
 gdu
