@@ -18,3 +18,4 @@ fzf
 gum
 swww
 noto-fonts
+noto-fonts-cjk
