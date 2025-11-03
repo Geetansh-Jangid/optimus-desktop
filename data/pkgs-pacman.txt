@@ -24,3 +24,14 @@ thunar-archive-plugin
 tumbler
 lazygit
 zed
+iwd
+polkit
+smartmontools
+swayidle
+wget
+wireless_tools
+wpa_supplicant
+xdg-utils
+xdg-desktop-portal-gnome
+xorg-wayland
+xwayland-satellite
