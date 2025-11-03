@@ -20,8 +20,8 @@ configuration {
 }
 
 /*****----- Global Properties -----*****/
-@import                          "/home/geetansh/.config/themes/everforest/rofi/shared/colors.rasi"
-@import                          "/home/geetansh/.config/themes/everforest/rofi/shared/fonts.rasi"
+@import                          "~/.config/themes/everforest/rofi/shared/colors.rasi"
+@import                          "~/.config/themes/everforest/rofi/shared/fonts.rasi"
 
 * {
     border-colour:               var(selected);
