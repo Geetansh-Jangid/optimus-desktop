@@ -1,83 +1,103 @@
 #!/bin/bash
 # ===========================================
-# 🌐 Optimus Desktop :: System Updater
+# 🌐 Optimus Desktop :: Unified System Upgrade
 # ===========================================
 set -euo pipefail
 
+# This function will be called if any command fails
+on_error() {
+  gum style --foreground 196 --bold "❌ An error occurred. Update process halted."
+  exit 1
+}
+
+# Trap any error signal and call the on_error function
+trap 'on_error' ERR
+
 gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
-  "🌐 Optimus Desktop :: System Updater" \
-  "────────────────────────────────────" \
-  "Refresh repositories and upgrade your system with style ✨"
+  "🌐 Optimus Desktop :: Unified System Upgrade" \
+  "─────────────────────────────────────────────" \
+  "Updates all detected package managers on the system. ✨"
 
-# --- Step 1: Preload sudo credentials cleanly ---
-gum style --foreground 244 "🔑 Checking sudo access (you may be prompted for your password)..."
-if ! sudo -v; then
-  gum style --foreground 196 "❌ sudo credentials failed. Exiting."
-  exit 1
-fi
-gum style --foreground 82 "[OK] Sudo access verified."
+# --- Step 1: Detect available package managers ---
+gum style --foreground 45 "[INFO] Detecting available package managers..."
 
-# --- Step 2: Auto-detect AUR Helper ---
+UPGRADE_PLAN=()
 AUR_HELPER=""
+FLATPAK_CMD=""
+SNAP_CMD=""
+
+# Check for AUR Helper
 if command -v paru &>/dev/null; then
   AUR_HELPER="paru"
 elif command -v yay &>/dev/null; then
   AUR_HELPER="yay"
 fi
 
-# --- Step 3: Choose Action ---
-# Dynamically build the list of choices
-CHOICES=("Refresh Repositories (pacman -Sy)" "Upgrade Official Packages (pacman -Syu)")
+# Check for Flatpak
+if command -v flatpak &>/dev/null; then
+  FLATPAK_CMD="flatpak"
+fi
+
+# Check for Snap
+if command -v snap &>/dev/null; then
+  SNAP_CMD="snap"
+fi
+
+# --- Step 2: Build and Display the Upgrade Plan ---
 if [[ -n "$AUR_HELPER" ]]; then
-  # Add the AUR option if a helper was found
-  CHOICES+=("Upgrade Official + AUR Packages ($AUR_HELPER)")
-  gum style --foreground 82 "[OK] Detected AUR Helper: $AUR_HELPER"
+  # The AUR helper handles both official and AUR packages
+  UPGRADE_PLAN+=("Official Repositories + AUR ($AUR_HELPER)")
+else
+  # Fallback to pacman if no helper is found
+  UPGRADE_PLAN+=("Official Repositories (pacman)")
 fi
 
-gum style --foreground 212 --bold --margin "1 0" "Please choose an action to perform:"
-ACTION=$(gum choose "${CHOICES[@]}")
-
-if [[ -z "$ACTION" ]]; then
-  gum style --foreground 196 "❌ No action selected. Exiting."
-  exit 1
+if [[ -n "$FLATPAK_CMD" ]]; then
+  UPGRADE_PLAN+=("Flatpak Packages")
 fi
 
-# --- Step 4: Confirm & Proceed ---
-if ! gum confirm "🚀 Ready to proceed with: '$ACTION'?"; then
-  gum style --foreground 196 "❌ Operation cancelled."
+if [[ -n "$SNAP_CMD" ]]; then
+  UPGRADE_PLAN+=("Snap Packages")
+fi
+
+gum style --border normal --padding "1 2" --margin "1 0" \
+  --border-foreground 212 "System Upgrade Plan"
+gum join --vertical --align left -- "${UPGRADE_PLAN[@]}"
+
+# --- Step 3: Confirm & Proceed ---
+if ! gum confirm "🚀 Ready to proceed with the full system upgrade?"; then
+  gum style --foreground 196 "❌ Operation cancelled by user."
   exit 0
 fi
 
-# --- Step 5: Execution Logic ---
-COMMAND_TO_RUN=""
-SPINNER_TITLE=""
+# --- Step 4: Preload sudo credentials cleanly ---
+gum style --foreground 244 "🔑 Checking sudo access (required for pacman/snap)..."
+sudo -v
 
-case "$ACTION" in
-"Refresh Repositories (pacman -Sy)")
-  SPINNER_TITLE="Refreshing package lists..."
-  # Use an array to build the command safely
-  COMMAND_TO_RUN=(sudo pacman -Sy)
-  ;;
-"Upgrade Official Packages (pacman -Syu)")
-  SPINNER_TITLE="Upgrading system via pacman..."
-  COMMAND_TO_RUN=(sudo pacman -Syu --noconfirm)
-  ;;
-"Upgrade Official + AUR Packages ($AUR_HELPER)")
-  SPINNER_TITLE="Upgrading system and AUR packages via $AUR_HELPER..."
-  # AUR helpers handle both official and AUR packages
-  COMMAND_TO_RUN=("$AUR_HELPER" -Syu --noconfirm)
-  ;;
-esac
+# --- Step 5: Execute Upgrade Plan ---
 
-# Execute the chosen command with a spinner
-gum spin --spinner line --title "$SPINNER_TITLE" -- \
-  "${COMMAND_TO_RUN[@]}"
-
-# --- Step 6: Final status ---
-if [[ $? -ne 0 ]]; then
-  gum style --foreground 196 --bold "❌ An error occurred during the operation."
-  exit 1
+# Update Official Repos and/or AUR
+if [[ -n "$AUR_HELPER" ]]; then
+  gum spin --spinner line --title "Upgrading via $AUR_HELPER..." -- \
+    "$AUR_HELPER" -Syu --noconfirm
+else
+  gum spin --spinner line --title "Upgrading via pacman..." -- \
+    sudo pacman -Syu --noconfirm
 fi
 
-gum style --foreground 82 --bold "✅ System is up to date!"
+# Update Flatpaks if detected
+if [[ -n "$FLATPAK_CMD" ]]; then
+  gum spin --spinner line --title "Upgrading Flatpaks..." -- \
+    flatpak update -y
+fi
+
+# Update Snaps if detected
+if [[ -n "$SNAP_CMD" ]]; then
+  gum spin --spinner line --title "Upgrading Snaps..." -- \
+    sudo snap refresh
+fi
+
+# --- Final Status ---
+# If the script reaches this point, the trap was not sprung, so all is well.
+gum style --foreground 82 --bold "✅ System upgrade completed successfully!"
