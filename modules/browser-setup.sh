@@ -19,32 +19,52 @@ gum style --foreground 212 --bold --margin "1 0" \
   "Please choose the browser(s) you wish to install." \
   "Use <space> to select, <enter> to confirm."
 
-BROWSERS=$(gum choose --no-limit \
+BROWSERS_SELECTED=$(gum choose --no-limit \
   "firefox" \
-  "zen-browser-bin" \
+  "librewolf" \
   "brave-bin" \
   "ungoogled-chromium-bin" \
-  "helium-bin" \
-  "librewolf")
+  "zen-browser-bin" \
+  "helium-bin")
 
-if [[ -z "$BROWSERS" ]]; then
+if [[ -z "$BROWSERS_SELECTED" ]]; then
   gum style --foreground 196 "❌ No browser selected. Exiting."
   exit 1
 fi
 
-# --- Step 2: Choose Installation Source ---
-SOURCE_CHOICE=$(gum choose --cursor "👉 " \
-  "Chaotic AUR (Prebuilt binaries)" \
-  "AUR Helper ($AUR_HELPER)" \
-  --header "Choose an installation source for the selected browser(s):")
+# --- Step 2: Sort browsers by installation source ---
+PACMAN_PKGS=()
+AUR_PKGS=()
+
+# Read the newline-separated string from gum into an array
+mapfile -t BROWSER_ARRAY <<<"$BROWSERS_SELECTED"
+
+for browser in "${BROWSER_ARRAY[@]}"; do
+  case "$browser" in
+  firefox | librewolf)
+    PACMAN_PKGS+=("$browser")
+    ;;
+  brave-bin | helium-bin | zen-browser-bin | ungoogled-chromium-bin)
+    AUR_PKGS+=("$browser")
+    ;;
+  esac
+done
 
 # --- Step 3: Confirm & Proceed ---
-# Use 'gum join' to display the selected browsers in a formatted list for confirmation
 gum style --border normal --padding "1 2" --margin "1 0" \
-  "You are about to install:" \
-  "$(gum join --vertical --align left -- "$BROWSERS")"
+  --border-foreground 212 "Installation Plan"
 
-if ! gum confirm "🚀 Ready to install using ${SOURCE_CHOICE%% *}? Continue?"; then
+if ((${#PACMAN_PKGS[@]})); then
+  gum style --foreground 45 "Official Repositories (pacman):"
+  gum join --vertical --align left -- "${PACMAN_PKGS[@]}"
+fi
+
+if ((${#AUR_PKGS[@]})); then
+  gum style --foreground 159 "AUR ($AUR_HELPER):"
+  gum join --vertical --align left -- "${AUR_PKGS[@]}"
+fi
+
+if ! gum confirm "🚀 Ready to proceed with the installation plan?"; then
   gum style --foreground 196 "❌ Installation cancelled."
   exit 0
 fi
@@ -54,22 +74,31 @@ gum style --foreground 244 "🔑 Checking sudo access (you may be prompted for y
 sudo -v
 
 # --- Step 5: Installation Logic ---
-# Note: The $BROWSERS variable is intentionally unquoted to allow the shell
-# to split the newline-separated list into multiple arguments for the command.
-if [[ "$SOURCE_CHOICE" == "Chaotic AUR (Prebuilt binaries)" ]]; then
-  gum style --foreground 45 "Installing selected browsers via Chaotic AUR..."
-  sudo pacman -S --noconfirm $BROWSERS
-else
-  gum style --foreground 45 "Installing selected browsers via $AUR_HELPER..."
-  "$AUR_HELPER" -S --noconfirm $BROWSERS
+INSTALL_FAILED=false
+
+# Install packages from official repositories if any were selected
+if ((${#PACMAN_PKGS[@]})); then
+  gum style --foreground 45 "Installing from official repositories..."
+  if ! sudo pacman -S --noconfirm "${PACMAN_PKGS[@]}"; then
+    gum style --foreground 196 "❌ Failed to install packages with pacman."
+    INSTALL_FAILED=true
+  fi
 fi
 
-# --- Step 6: Check for errors ---
-if [[ $? -ne 0 ]]; then
-  gum style --foreground 196 --bold "❌ An error occurred during the installation."
+# Install packages from AUR if any were selected
+if ((${#AUR_PKGS[@]})); then
+  gum style --foreground 159 "Installing from the AUR with $AUR_HELPER..."
+  if ! "$AUR_HELPER" -S --noconfirm "${AUR_PKGS[@]}"; then
+    gum style --foreground 196 "❌ Failed to install packages with $AUR_HELPER."
+    INSTALL_FAILED=true
+  fi
+fi
+
+# --- Step 6: Final status ---
+if [[ "$INSTALL_FAILED" == true ]]; then
+  gum style --foreground 196 --bold "❌ One or more installations failed. Please review the output above."
   exit 1
 fi
 
-# --- Done ---
 gum style --foreground 82 --bold "✅ Installation complete!"
 gum style --foreground 244 "You can now launch your new browser(s) from the applications menu."
