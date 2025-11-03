@@ -27,6 +27,35 @@ readonly EXECUTION_ORDER=(
 # --- Module Metadata ---
 declare -A MODULE_DESCRIPTIONS
 MODULE_DESCRIPTIONS=(
+#!/bin/bash
+
+# ==============================================================================
+# --- CONFIGURATION: DEFINE MODULES ---
+# ==============================================================================
+# This script should be in the root directory of your dotfiles repo.
+# It expects a 'modules/' directory containing the individual installer scripts.
+
+# The directory where your individual installer scripts are located.
+readonly MODULES_DIR="modules"
+
+# The order in which the scripts should be executed during a full install.
+# The update module has been added as the first step.
+readonly EXECUTION_ORDER=(
+  "update.sh"
+  "aur-helper.sh"
+  "chaotic-aur-setup.sh"
+  "package-install.sh"
+  "editor.sh"
+  "browser-setup.sh"
+  "setup-zsh.sh"
+  "config-copy.sh"
+  "scripts-copy.sh"
+)
+
+# Descriptions for each module, used in the interactive installer.
+declare -A MODULE_DESCRIPTIONS
+MODULE_DESCRIPTIONS=(
+  ["update.sh"]="Refreshes package repositories and upgrades all system packages (Arch, AUR, Flatpak, Snap) to their latest versions."
   ["aur-helper.sh"]="Installs a helper program ('paru' or 'yay') to easily build and install software from the Arch User Repository (AUR)."
   ["chaotic-aur-setup.sh"]="Configures the Chaotic-AUR, a third-party repository that provides pre-built binary packages for many popular AUR applications, saving you significant compilation time."
   ["package-install.sh"]="Reads package lists from the 'data/' directory and installs all core applications, utilities, fonts, and system libraries using the '--needed' flag to prevent re-installing existing packages."
@@ -37,8 +66,10 @@ MODULE_DESCRIPTIONS=(
   ["scripts-copy.sh"]="Copies custom helper scripts from the 'bin/' directory to ~/.local/bin/, making them available as commands in your terminal."
 )
 
+# The potential impact of skipping each module.
 declare -A MODULE_IMPACTS
 MODULE_IMPACTS=(
+  ["update.sh"]="HIGHLY RECOMMENDED. Skipping this can lead to outdated packages and potential dependency issues during installation."
   ["aur-helper.sh"]="CRITICAL. Skipping this will cause AUR package installations in later steps to fail."
   ["chaotic-aur-setup.sh"]="Recommended. Skipping this means AUR packages will be built from source, which can be very time-consuming."
   ["package-install.sh"]="CRITICAL for first install. On subsequent runs, it safely updates existing packages."
@@ -132,7 +163,9 @@ run_upgrade_flow() {
   gum style --border normal --margin "1 2" --padding "1 2" \
     --border-foreground 212 "🚀 Optimus Desktop :: System Upgrade"
 
+  # MODIFIED: Added 'update.sh' to the upgrade routine.
   local -r UPGRADE_MODULES=(
+    "update.sh"
     "package-install.sh"
     "config-copy.sh"
     "scripts-copy.sh"

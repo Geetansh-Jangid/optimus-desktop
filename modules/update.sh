@@ -70,7 +70,8 @@ sudo -v
 INSTALL_FAILED=false
 
 # Update Official Repos and/or AUR
-gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Arch Packages ---"
+# FIXED: Changed border style from 'heavy' to 'thick'.
+gum style --border thick --border-foreground 212 --margin "1 0" -- "--- Updating Arch Packages ---"
 if [[ -n "$AUR_HELPER" ]]; then
   if ! "$AUR_HELPER" -Syu --noconfirm; then
     gum style --foreground 196 "❌ $AUR_HELPER upgrade failed."
@@ -85,7 +86,8 @@ fi
 
 # Update Flatpaks if detected and no previous error occurred
 if [[ -n "$FLATPAK_CMD" && "$INSTALL_FAILED" == false ]]; then
-  gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Flatpak Packages ---"
+  # FIXED: Changed border style from 'heavy' to 'thick'.
+  gum style --border thick --border-foreground 212 --margin "1 0" -- "--- Updating Flatpak Packages ---"
   if ! flatpak update -y; then
     gum style --foreground 196 "❌ Flatpak upgrade failed."
     INSTALL_FAILED=true
@@ -94,7 +96,8 @@ fi
 
 # Update Snaps if detected and no previous error occurred
 if [[ -n "$SNAP_CMD" && "$INSTALL_FAILED" == false ]]; then
-  gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Snap Packages ---"
+  # FIXED: Changed border style from 'heavy' to 'thick'.
+  gum style --border thick --border-foreground 212 --margin "1 0" -- "--- Updating Snap Packages ---"
   if ! sudo snap refresh; then
     gum style --foreground 196 "❌ Snap upgrade failed."
     INSTALL_FAILED=true
