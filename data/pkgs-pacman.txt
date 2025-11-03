@@ -34,4 +34,8 @@ wpa_supplicant
 xdg-utils
 xdg-desktop-portal-gnome
 xorg-xwayland
+spotify
+discord
+gvfs
+gnome-keyring
 xwayland-satellite

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ===========================================
-# 🌐 Optimus Desktop :: AUR Helper Setup (bin)
+# 🌐 Optimus Desktop :: AUR Helper Setup (yay-bin)
 # ===========================================
 set -euo pipefail
 
 gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
-  "🌐 Optimus Desktop :: AUR Helper Setup (bin)" \
-  "────────────────────────────────────────────" \
-  "Installs paru-bin or yay-bin with style ✨"
+  "🌐 Optimus Desktop :: AUR Helper Setup (yay-bin)" \
+  "──────────────────────────────────────────────" \
+  "Installs yay-bin, a popular AUR helper ✨"
 
 # -------------------------------------------------------------------------
 # ---- Check Dependencies ----
@@ -19,7 +19,7 @@ MISSING=()
 
 is_installed() {
   local pkg=$1
-  # Check command existence (for git, sudo, curl, gum) or pacman database (for base-devel)
+  # Check command existence (for git, sudo, curl) or pacman database (for base-devel)
   command -v "$pkg" &>/dev/null || pacman -Qi "$pkg" &>/dev/null
 }
 
@@ -44,42 +44,27 @@ else
 fi
 
 # -------------------------------------------------------------------------
-# ---- Check if AUR helper already installed ----
+# ---- Check if yay is already installed ----
 # -------------------------------------------------------------------------
-AUR_HELPERS=(paru paru-bin yay yay-bin)
-
-for helper in "${AUR_HELPERS[@]}"; do
-  if command -v "$helper" &>/dev/null; then
-    # Use the non-bin name for version check if it's the bin package
-    local_cmd="${helper%-bin}"
-    version=$("$local_cmd" --version 2>/dev/null | head -n1)
-    gum style --foreground 82 "✔ AUR helper '$helper' already installed: $version"
-    exit 0
-  fi
-done
+if command -v "yay" &>/dev/null; then
+  version=$(yay --version 2>/dev/null | head -n1)
+  gum style --foreground 82 "✔ AUR helper 'yay' already installed: $version"
+  exit 0
+fi
 
 # -------------------------------------------------------------------------
-# ---- User Choice ----
+# ---- Confirmation ----
 # -------------------------------------------------------------------------
-gum style --foreground 45 "[INFO] Choose your preferred AUR helper (bin version):"
-
-CHOICE=$(gum choose \
-  "paru-bin :: Rust-based, newer and fast" \
-  "yay-bin  :: Go-based, stable and familiar" \
-  --header "Select one:")
-
-CHOICE=$(echo "$CHOICE" | awk '{print $1}') # extract actual pkg name
-gum style --foreground 212 "[INFO] Selected helper: $CHOICE"
-
-if ! gum confirm "Proceed to install $CHOICE?"; then
+if ! gum confirm "Proceed to install yay-bin?"; then
   gum style --foreground 240 "[INFO] Installation canceled."
   exit 0
 fi
 
 # -------------------------------------------------------------------------
-# ---- Install from AUR manually (FIXED BLOCK) ----
+# ---- Install yay-bin from AUR manually ----
 # -------------------------------------------------------------------------
-gum style --foreground 45 "[INFO] Installing $CHOICE from AUR..."
+gum style --foreground 45 "[INFO] Installing yay-bin from AUR..."
+CHOICE="yay-bin"
 
 # Create temp directory first (outside of gum spin)
 BUILD_DIR=$(mktemp -d)
@@ -104,10 +89,11 @@ if ! (cd "$PACKAGE_DIR" && makepkg -si --noconfirm); then
   gum style --foreground 196 "❌ Installation of $CHOICE failed during makepkg."
   exit 1
 fi
+
 # -------------------------------------------------------------------------
-# ---- Final Verification (COMPLETED BLOCK) ----
+# ---- Final Verification ----
 # -------------------------------------------------------------------------
-BIN_NAME="${CHOICE%-bin}"
+BIN_NAME="yay"
 if command -v "$BIN_NAME" &>/dev/null; then
   version=$("$BIN_NAME" --version 2>/dev/null | head -n1)
   gum style --foreground 82 "✨ Success! '$BIN_NAME' is installed and working: $version"
