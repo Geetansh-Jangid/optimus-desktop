@@ -32,7 +32,7 @@
   },
 
   "custom/playerctl": {
-    "exec": "/home/geetansh/.local/bin/player.sh",
+    "exec": "~/.local/bin/player.sh",
     "interval": 1,
     "on-click": "playerctl play-pause",
     "on-scroll-up": "playerctl next",
