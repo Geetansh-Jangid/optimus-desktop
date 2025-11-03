@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =======================================================
-# 🌐 Optimus Desktop :: Code Editor Installation (Gum)
+# 🌐 Optimus Desktop :: Code Editor Installation (Multi)
 # =======================================================
 set -euo pipefail
 
@@ -20,90 +20,110 @@ gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
   "🌐 Optimus Desktop :: Code Editor Selection" \
   "──────────────────────────────────────────" \
-  "Select your preferred code editor to install."
+  "Select your preferred code editor(s) to install."
 
 # -------------------------------------------------------------------------
-# ---- Define Options (with corrected metadata) ----
-# Format: "Description"="package_name:install_type:binary_name"
-# ❗ FIXED: Zed is now correctly identified as an official 'pacman' package
-# from the [extra] repository.
+# ---- Define Options ----
+# Format: "Description"="package_name:install_type"
 # -------------------------------------------------------------------------
 declare -A EDITORS=(
-  ["Zed :: A high-performance, multiplayer code editor (Official Repo)"]="zed:pacman:zeditor"
-  ["Visual Studio Code :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin:aur:code"
-  ["Neovim :: Powerful, keyboard-centric text editor (Official Repo)"]="nvim:pacman:nvim"
+  ["Visual Studio Code :: Microsoft's popular, feature-rich editor (AUR)"]="visual-studio-code-bin:aur"
+  ["Neovim :: Powerful, keyboard-centric text editor (Official)"]="nvim:pacman"
+  ["Geany :: Fast and lightweight IDE (Official)"]="geany:pacman"
+  ["Vim :: The ubiquitous text editor (Official)"]="vim:pacman"
+  ["Emacs :: An extensible, customizable, self-documenting text editor (Official)"]="emacs:pacman"
+  ["Mousepad :: Simple and easy-to-use text editor for XFCE (Official)"]="mousepad:pacman"
 )
 
 # Prepare choices array for gum choose
 CHOICES=("${!EDITORS[@]}")
 
 # -------------------------------------------------------------------------
-# ---- User Choice ----
+# ---- User Choice (Multiple selections allowed) ----
 # -------------------------------------------------------------------------
-gum style --foreground 45 "[INFO] Please select the editor you would like to install:"
+gum style --foreground 45 "[INFO] Please select the editor(s) you would like to install:" \
+  "Use <space> to select, <enter> to confirm."
 
-SELECTED_DESC=$(gum choose \
+SELECTED_DESCS=$(gum choose --no-limit \
   "${CHOICES[@]}" \
-  --header "Select one:")
+  --header "Select one or more editors:")
 
-if [[ -z "$SELECTED_DESC" ]]; then
+if [[ -z "$SELECTED_DESCS" ]]; then
   gum style --foreground 240 "[INFO] No editor selected. Exiting."
   exit 0
 fi
 
-# --- Parse the selected editor's metadata ---
-EDITOR_DATA="${EDITORS[$SELECTED_DESC]}"
-IFS=':' read -r PACKAGE_TO_INSTALL INSTALL_TYPE BINARY_NAME <<<"$EDITOR_DATA"
+# --- Sort selections by installation source ---
+PACMAN_PKGS=()
+AUR_PKGS=()
 
-gum style --foreground 212 "[INFO] Selected package: $PACKAGE_TO_INSTALL"
+mapfile -t SELECTED_ARRAY <<<"$SELECTED_DESCS"
 
-if ! gum confirm "Proceed to install $PACKAGE_TO_INSTALL?"; then
+for desc in "${SELECTED_ARRAY[@]}"; do
+  EDITOR_DATA="${EDITORS[$desc]}"
+  IFS=':' read -r package install_type <<<"$EDITOR_DATA"
+
+  if [[ "$install_type" == "pacman" ]]; then
+    PACMAN_PKGS+=("$package")
+  elif [[ "$install_type" == "aur" ]]; then
+    AUR_PKGS+=("$package")
+  fi
+done
+
+# --- Display plan and ask for final confirmation ---
+gum style --border normal --padding "1 2" --margin "1 0" \
+  --border-foreground 212 "Editor Installation Plan"
+
+if ((${#PACMAN_PKGS[@]})); then
+  gum style --foreground 45 "Official Repositories (pacman):"
+  gum join --vertical --align left -- "${PACMAN_PKGS[@]}"
+fi
+
+if ((${#AUR_PKGS[@]})); then
+  AUR_HELPER=$(detect_aur_helper)
+  if [[ -z "$AUR_HELPER" ]]; then
+    gum style --foreground 196 "❌ ERROR: AUR packages selected, but no helper (paru/yay) was found."
+    exit 1
+  fi
+  gum style --foreground 159 "AUR ($AUR_HELPER):"
+  gum join --vertical --align left -- "${AUR_PKGS[@]}"
+fi
+
+if ! gum confirm "Proceed to install the selected editors?"; then
   gum style --foreground 240 "[INFO] Installation canceled."
   exit 0
 fi
 
 # -------------------------------------------------------------------------
-# ---- Installation (with conditional spinner logic) ----
+# ---- Installation Logic ----
 # -------------------------------------------------------------------------
-INSTALL_SUCCESS=false
+INSTALL_FAILED=false
 
-if [[ "$INSTALL_TYPE" == "aur" ]]; then
-  AUR_HELPER=$(detect_aur_helper)
-  if [[ -n "$AUR_HELPER" ]]; then
-    gum style --foreground 45 "[NOTE] Using '$AUR_HELPER' for AUR installation..."
-    # A spinner is appropriate here because AUR builds can be slow.
-    if gum spin --spinner line --title "Installing $PACKAGE_TO_INSTALL via $AUR_HELPER..." -- \
-      "$AUR_HELPER" -S --needed --noconfirm "$PACKAGE_TO_INSTALL"; then
-      INSTALL_SUCCESS=true
-    fi
-  else
-    gum style --foreground 196 "❌ ERROR: '$PACKAGE_TO_INSTALL' is an AUR package, but no AUR helper (paru/yay) was found."
-    exit 1
+# Install packages from official repositories
+if ((${#PACMAN_PKGS[@]})); then
+  gum style --border thick --margin "1 0" -- "--- Installing from Official Repositories ---"
+  if ! sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}"; then
+    gum style --foreground 196 "❌ Failed to install packages with pacman."
+    INSTALL_FAILED=true
   fi
+fi
 
-elif [[ "$INSTALL_TYPE" == "pacman" ]]; then
-  gum style --foreground 45 "[INFO] Running pacman. You will see the live output below."
-  echo # Add a newline for cleaner separation
-
-  # --- NO SPINNER for pacman ---
-  # We run pacman directly to show all its output: dependency lists,
-  # download progress, and any potential errors. This provides full transparency.
-  if sudo pacman -S --needed "$PACKAGE_TO_INSTALL"; then
-    INSTALL_SUCCESS=true
+# Install packages from AUR
+if [[ -n "$AUR_HELPER" ]] && ((${#AUR_PKGS[@]})) && [[ "$INSTALL_FAILED" == false ]]; then
+  gum style --border thick --margin "1 0" -- "--- Installing from the AUR via $AUR_HELPER ---"
+  if ! "$AUR_HELPER" -S --needed --noconfirm "${AUR_PKGS[@]}"; then
+    gum style --foreground 196 "❌ Failed to install packages with $AUR_HELPER."
+    INSTALL_FAILED=true
   fi
-else
-  gum style --foreground 196 "❌ ERROR: Unknown installation type '$INSTALL_TYPE' for package '$PACKAGE_TO_INSTALL'."
-  exit 1
 fi
 
 # -------------------------------------------------------------------------
 # ---- Final Verification ----
 # -------------------------------------------------------------------------
-if [[ "$INSTALL_SUCCESS" = true ]] && command -v "$BINARY_NAME" &>/dev/null; then
-  gum style --foreground 82 --bold "✅ Successfully installed $PACKAGE_TO_INSTALL!"
-  gum style --foreground 240 "You can now launch it by running '$BINARY_NAME'."
-else
-  gum style --foreground 196 "❌ Installation of $PACKAGE_TO_INSTALL failed or its command '$BINARY_NAME' was not found."
-  gum style --foreground 208 "Please review the output above for error messages."
+if [[ "$INSTALL_FAILED" == true ]]; then
+  gum style --foreground 196 --bold "❌ One or more editor installations failed. Please review the output above."
   exit 1
 fi
+
+gum style --foreground 82 --bold "✅ Successfully installed all selected editors!"
+gum style --foreground 240 "You can now launch them from your applications menu."
