@@ -33,5 +33,5 @@ wireless_tools
 wpa_supplicant
 xdg-utils
 xdg-desktop-portal-gnome
-xorg-wayland
+xorg-xwayland
 xwayland-satellite
