@@ -1,23 +1,14 @@
 #!/bin/bash
 # ===========================================
-# 🌐 Optimus Desktop :: Unified System Upgrade
+# 🌐 Optimus Desktop :: Unified System Upgrade (Verbose)
 # ===========================================
 set -euo pipefail
 
-# This function will be called if any command fails
-on_error() {
-  gum style --foreground 196 --bold "❌ An error occurred. Update process halted."
-  exit 1
-}
-
-# Trap any error signal and call the on_error function
-trap 'on_error' ERR
-
 gum style --border normal --margin "1 2" --padding "1 2" \
   --border-foreground 212 \
-  "🌐 Optimus Desktop :: Unified System Upgrade" \
-  "─────────────────────────────────────────────" \
-  "Updates all detected package managers on the system. ✨"
+  "🌐 Optimus Desktop :: Unified System Upgrade (Verbose)" \
+  "───────────────────────────────────────────────────────" \
+  "Updates all detected package managers with raw log output. ✨"
 
 # --- Step 1: Detect available package managers ---
 gum style --foreground 45 "[INFO] Detecting available package managers..."
@@ -75,29 +66,45 @@ fi
 gum style --foreground 244 "🔑 Checking sudo access (required for pacman/snap)..."
 sudo -v
 
-# --- Step 5: Execute Upgrade Plan ---
+# --- Step 5: Execute Upgrade Plan with Raw Logs ---
+INSTALL_FAILED=false
 
 # Update Official Repos and/or AUR
+gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Arch Packages ---"
 if [[ -n "$AUR_HELPER" ]]; then
-  gum spin --spinner line --title "Upgrading via $AUR_HELPER..." -- \
-    "$AUR_HELPER" -Syu --noconfirm
+  if ! "$AUR_HELPER" -Syu --noconfirm; then
+    gum style --foreground 196 "❌ $AUR_HELPER upgrade failed."
+    INSTALL_FAILED=true
+  fi
 else
-  gum spin --spinner line --title "Upgrading via pacman..." -- \
-    sudo pacman -Syu --noconfirm
+  if ! sudo pacman -Syu --noconfirm; then
+    gum style --foreground 196 "❌ pacman upgrade failed."
+    INSTALL_FAILED=true
+  fi
 fi
 
-# Update Flatpaks if detected
-if [[ -n "$FLATPAK_CMD" ]]; then
-  gum spin --spinner line --title "Upgrading Flatpaks..." -- \
-    flatpak update -y
+# Update Flatpaks if detected and no previous error occurred
+if [[ -n "$FLATPAK_CMD" && "$INSTALL_FAILED" == false ]]; then
+  gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Flatpak Packages ---"
+  if ! flatpak update -y; then
+    gum style --foreground 196 "❌ Flatpak upgrade failed."
+    INSTALL_FAILED=true
+  fi
 fi
 
-# Update Snaps if detected
-if [[ -n "$SNAP_CMD" ]]; then
-  gum spin --spinner line --title "Upgrading Snaps..." -- \
-    sudo snap refresh
+# Update Snaps if detected and no previous error occurred
+if [[ -n "$SNAP_CMD" && "$INSTALL_FAILED" == false ]]; then
+  gum style --border heavy --border-foreground 212 --margin "1 0" "--- Updating Snap Packages ---"
+  if ! sudo snap refresh; then
+    gum style --foreground 196 "❌ Snap upgrade failed."
+    INSTALL_FAILED=true
+  fi
 fi
 
 # --- Final Status ---
-# If the script reaches this point, the trap was not sprung, so all is well.
+if [[ "$INSTALL_FAILED" == true ]]; then
+  gum style --foreground 196 --bold "❌ One or more update commands failed. Please review the output above."
+  exit 1
+fi
+
 gum style --foreground 82 --bold "✅ System upgrade completed successfully!"
