@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Define options
+options=(
+  # Format: "Text to display\0icon\x1f<icon_name>\x1f"
+  "Power Off"
+  "Reboot"
+  "Lock"
+  "Suspend"
+  "Logout"
+)
+
+# Use rofi to pick one
+choice=$(printf "%s\n" "${options[@]}" | rofi -i -p "System:" -dmenu -theme-str 'window { width: 30%; } listview { lines: 5; }')
+
+# The case statement only needs the text part now
+case "$choice" in
+"Power Off") systemctl poweroff ;;
+"Reboot") systemctl reboot ;;
+"Lock") swaylock ;;
+"Suspend") systemctl suspend ;;
+"Logout") niri msg quit ;;
+*) exit 0 ;;
+esac

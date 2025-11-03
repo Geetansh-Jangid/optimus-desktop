@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Opens the default browser or private window dynamically
+
+BROWSER_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null)
+BROWSER="${BROWSER_DESKTOP%%.desktop}"
+
+# Normalize desktop names → real executables
+case "$BROWSER" in
+    zen|zen-browser)
+        CMD="zen-browser"
+        ;;
+    brave|brave-browser)
+        CMD="brave"
+        ;;
+    chromium|chromium-browser)
+        CMD="chromium"
+        ;;
+    firefox)
+        CMD="firefox"
+        ;;
+    *)
+        CMD="$BROWSER" # fallback
+        ;;
+esac
+
+# Handle arguments
+if [[ "$1" == "--private" ]]; then
+    case "$CMD" in
+        zen-browser|firefox)
+            "$CMD" --private-window &
+            ;;
+        brave|chromium)
+            "$CMD" --incognito &
+            ;;
+        *)
+            "$CMD" &
+            ;;
+    esac
+else
+    "$CMD" &
+fi

@@ -4,12 +4,14 @@ binds {
     Mod+Escape hotkey-overlay-title="Show exit menu" { spawn-sh "~/.local/bin/logout"; }
 
     // browser
-    Mod+b hotkey-overlay-title="Open Zen" { spawn "zen-browser"; }
+    Mod+b hotkey-overlay-title="Open Browser" { spawn-sh "~/.local/bin/launch-browser"; }
     // browser incognito
-    Mod+Shift+b hotkey-overlay-title="Open Zen Incognito" { spawn-sh "zen-browser --private-window"; }
+    Mod+Shift+b hotkey-overlay-title="Open Browser Incognito" { spawn-sh "~/.local/bin/launch-browser --private"; }
 
     // clipboard manager
-    Mod+Alt+v hotkey-overlay-title="See clipboard" { spawn-sh "cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"; }
+    Mod+Alt+v hotkey-overlay-title="See clipboard history" { spawn-sh "cliphist list | rofi -dmenu -display-columns 2 | cliphist decode | wl-copy"; }
+    Mod+Shift+Alt+v { spawn-sh "cliphist wipe"; } // to clear clipboard history
+
 
     // Editors
     Mod+Slash hotkey-overlay-title="Open Zed" { spawn "zeditor"; }
@@ -25,9 +27,6 @@ binds {
     // notifications
     Mod+Shift+n hotkey-overlay-title="Toggle Notificcation Center" { spawn-sh "swaync-client -t"; }
 
-    // Global menu
-    Mod+Alt+Space hotkey-overlay-title="Menu" { spawn-sh "~/.local/bin/menu.sh"; }
-
     // Packages Management
     Mod+i hotkey-overlay-title="Install Pacman Packages" { spawn-sh "alacritty --title \"pkg-pacman-install\" -e zsh -ic \"pkg-pacman-install\""; }
     Mod+Shift+i hotkey-overlay-title="Remove Packages" { spawn-sh "alacritty --title \"pkg-remove\" -e zsh -ic \"pkg-remove\""; }
@@ -39,18 +38,19 @@ binds {
     Mod+Alt+Shift+i hotkey-overlay-title="Remove a webapp" { spawn-sh "alacritty --title \"webapp-remove\" -e zsh -ic \"webapp-remove\""; }
 
     // AI stuff
-    Mod+Alt+g hotkey-overlay-title="Open Google AI Studio" { spawn-sh "brave --app=https://aistudio.google.com/"; }
-    Mod+Ctrl+g hotkey-overlay-title="Open ChatGPT" { spawn-sh "brave --app=https://chatgpt.com/"; }
-    Mod+Shift+g hotkey-overlay-title="Open Gemini" { spawn-sh "brave --app=https://gemini.google.com/"; }
-    Mod+g hotkey-overlay-title="Open Perplexity" { spawn-sh "brave --app=https://perplexity.ai --disable-features=DesktopPWAsTabStrip"; }
+    Mod+Alt+g hotkey-overlay-title="Open Google AI Studio" { spawn-sh "~/.local/bin/launch-webapp https://aistudio.google.com/"; }
+    Mod+Ctrl+g hotkey-overlay-title="Open ChatGPT" { spawn-sh "~/.local/bin/launch-webapp https://chatgpt.com/"; }
+    Mod+Shift+g hotkey-overlay-title="Open Gemini" { spawn-sh "~/.local/bin/launch-webapp https://gemini.google.com/"; }
+    Mod+g hotkey-overlay-title="Open Perplexity" { spawn-sh "~/.local/bin/launch-webapp https://perplexity.ai/"; }
 
     // IMP Apps
-    Mod+e hotkey-overlay-title="Open Gmail" { spawn-sh "brave --app=https://mail.google.com/"; }
+    Mod+e hotkey-overlay-title="Open Gmail" { spawn-sh "~/.local/bin/launch-webapp https://mail.google.com/"; }
     Mod+d hotkey-overlay-title="Open Discord" { spawn-sh "discord"; }
 
     // Youtube and Music
-    Mod+y hotkey-overlay-title="Open Youtube" { spawn-sh "brave --app=https://youtube.com/"; }
-    Mod+m hotkey-overlay-title="Open YT Music" { spawn-sh "brave --app=https://music.youtube.com"; }
+    Mod+y hotkey-overlay-title="Open Youtube" { spawn-sh "~/.local/bin/launch-webapp https://youtube.com/"; }
+    Mod+Shift+m hotkey-overlay-title="Open YT Music" { spawn-sh "~/.local/bin/launch-webapp https://music.youtube.com"; }
+    Mod+m hotkey-overlay-title="Open Spotify" { spawn "spotify"; }
 
     // change global these
     Mod+Shift+t hotkey-overlay-title="Change Global Theme" { spawn-sh ".local/bin/global-theme.sh"; }
@@ -77,7 +77,7 @@ binds {
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
     // For example, this is a standard bind to toggle the screen reader (orca).
-    Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
+    // Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.

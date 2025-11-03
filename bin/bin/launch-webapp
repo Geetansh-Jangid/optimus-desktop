@@ -1,0 +1,16 @@
+
+#!/usr/bin/env bash
+
+# --- CONFIGURABLE PART ---
+WEBAPP_BROWSER="brave"   # can be brave, brave-browser, chromium, etc.
+# --------------------------
+
+URL="$1"
+
+if [ -z "$URL" ]; then
+    echo "Usage: webapp <url>"
+    exit 1
+fi
+
+# Open Brave in minimal app mode
+"$WEBAPP_BROWSER" --app="$URL" --enable-features=WindowControlsOverlay &
