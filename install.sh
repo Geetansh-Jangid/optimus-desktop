@@ -1,32 +1,3 @@
-#!/usr/bin/env bash
-# ===================================================
-# 🚀 Optimus Desktop :: Master Installer
-# A flexible, guided installer for your desktop environment.
-# ===================================================
-
-set -euo pipefail
-
-if ! command -v gum &>/dev/null; then
-  echo "❌ gum not found. Installing it first (sudo pacman -S gum)."
-  sudo pacman -S gum
-fi
-
-# --- Constants & Global Variables ---
-readonly MODULES_DIR="$(dirname "$0")/modules"
-readonly EXECUTION_ORDER=(
-  "aur-helper.sh"
-  "chaotic-aur-setup.sh"
-  "package-install.sh"
-  "editor.sh"
-  "browser-setup.sh"
-  "setup-zsh.sh"
-  "config-copy.sh"
-  "scripts-copy.sh"
-)
-
-# --- Module Metadata ---
-declare -A MODULE_DESCRIPTIONS
-MODULE_DESCRIPTIONS=(
 #!/bin/bash
 
 # ==============================================================================
@@ -250,7 +221,7 @@ main() {
     fi
     ;;
   esac
-} # <--- CORRECT: The main function definition ends here.
+}
 
 # --- Run the main function with all command-line arguments ---
-main "$@" # <--- CORRECT: Call the function at the very end of the script.
+main "$@"
