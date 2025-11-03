@@ -1,4 +1,1 @@
-// @theme "/home/geetansh/.config/themes/dracula/rofi/main.rasi"
-@theme "/home/geetansh/.config/current/rofi-theme.rasi"
-
-
+@theme "~/.config/current/rofi-theme.rasi"
