@@ -162,8 +162,8 @@ run_upgrade_flow() {
 main() {
   # Guard: Require gum
   if ! command -v gum &>/dev/null; then
-    echo "❌ gum not found. Please install it first (sudo pacman -S gum)."
-    exit 1
+    echo "❌ gum not found. Installing it first (sudo pacman -S gum)."
+    sudo pacman -S gum
   fi
 
   # Default mode
