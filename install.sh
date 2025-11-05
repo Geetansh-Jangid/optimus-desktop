@@ -27,13 +27,13 @@ readonly EXECUTION_ORDER=(
 declare -A MODULE_DESCRIPTIONS
 MODULE_DESCRIPTIONS=(
   ["update.sh"]="Refreshes package repositories and upgrades all system packages (Arch, AUR, Flatpak, Snap) to their latest versions."
-  ["aur-helper.sh"]="Installs a helper program ('paru' or 'yay') to easily build and install software from the Arch User Repository (AUR)."
+  ["aur-helper.sh"]="Installs a helper program (yay) to easily build and install software from the Arch User Repository (AUR)."
   ["chaotic-aur-setup.sh"]="Configures the Chaotic-AUR, a third-party repository that provides pre-built binary packages for many popular AUR applications, saving you significant compilation time."
   ["package-install.sh"]="Reads package lists from the 'data/' directory and installs all core applications, utilities, fonts, and system libraries using the '--needed' flag to prevent re-installing existing packages."
-  ["editor.sh"]="Prompts you to select and install a code editor."
+  ["editor.sh"]="Prompts you to select and install an editor."
   ["browser-setup.sh"]="Prompts you to select and install a web browser."
   ["setup-zsh.sh"]="Installs and configures the Zsh shell with Oh My Zsh, Powerlevel10k theme, and useful plugins (like auto-suggestions) for a powerful terminal experience."
-  ["config-copy.sh"]="Copies all personal configuration files (dotfiles) from the 'config/' directory to their correct locations in your home directory (~/.config/). This applies your custom settings to applications."
+  ["config-copy.sh"]="Copies all personal configuration files (dotfiles) from the 'config/' directory to their correct locations in your home directory (~/.config/)."
   ["scripts-copy.sh"]="Copies custom helper scripts from the 'bin/' directory to ~/.local/bin/, making them available as commands in your terminal."
 )
 
@@ -44,10 +44,10 @@ MODULE_IMPACTS=(
   ["aur-helper.sh"]="CRITICAL. Skipping this will cause AUR package installations in later steps to fail."
   ["chaotic-aur-setup.sh"]="Recommended. Skipping this means AUR packages will be built from source, which can be very time-consuming."
   ["package-install.sh"]="CRITICAL for first install. On subsequent runs, it safely updates existing packages."
-  ["editor.sh"]="Optional. You can skip this if you don't need a code editor or prefer to install one manually later. Zed editor is installed by-default"
+  ["editor.sh"]="Optional. You can skip this if you don't need an editor or prefer to install one manually later. Zed editor is installed by-default"
   ["browser-setup.sh"]="Optional. You can skip this if you don't need a graphical web browser or prefer to install one manually."
   ["setup-zsh.sh"]="Recommended. Skipping this will leave you with a default system shell (like bash)."
-  ["config-copy.sh"]="HIGHLY RECOMMENDED. Skipping this will result in default application settings, not your personalized ones."
+  ["config-copy.sh"]="HIGHLY RECOMMENDED. Skipping this will result in default application settings, not the personalised ones."
   ["scripts-copy.sh"]="Optional. Skip this if you do not have any custom scripts to install."
 )
 
