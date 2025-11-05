@@ -4,6 +4,9 @@
 # =======================================================
 set -euo pipefail
 
+# --- Initialize AUR_HELPER ---
+AUR_HELPER=""
+
 # --- Helper Function: Detect available AUR helper ---
 detect_aur_helper() {
   if command -v paru &>/dev/null; then
