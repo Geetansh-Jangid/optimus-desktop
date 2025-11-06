@@ -123,7 +123,7 @@ binds {
 
     // Change Wallpaper
     Mod+Shift+w hotkey-overlay-title="Cycle Wallpapers" { spawn-sh "~/.local/bin/wallpaper.sh"; }
-    Mod+Ctrl+w hotkey-overlay-title="Change Wallpaper" { spawn-sh "kitty --title \"change-wallpaper\" zsh -ic \"yazi ~/.config/current/wallpapers\""; }
+    Mod+Ctrl+w hotkey-overlay-title="Change Wallpaper" { spawn-sh "foot -e yazi ~/.config/current/wallpapers"; }
       
     // notifications
     Mod+Shift+n hotkey-overlay-title="Toggle Notificcation Center" { spawn-sh "swaync-client -t"; }
@@ -171,7 +171,7 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
-    Mod+Shift+return hotkey-overlay-title="Open Alternative Terminal: kitty" { spawn "kitty"; }
+    Mod+Shift+return hotkey-overlay-title="Open Alternative Terminal: Foot" { spawn "foot"; }
     Mod+space hotkey-overlay-title="Run an Application: rofi" { spawn-sh "rofi -show drun"; }
     Super+L hotkey-overlay-title="Lock the Screen: hyprlock" { spawn "hyprlock"; }
 
@@ -778,15 +778,3 @@ window-rule {
     default-floating-position x=480 y=270 relative-to="top-left"
     opacity 1.0
 }
-
-// wallpaper ui
-window-rule {
-    match app-id=r#"kitty"# title="^change-wallpaper"
-    open-floating true
-    default-column-width { proportion 0.7; }
-    default-window-height { proportion 0.5; }
-    default-floating-position x=288 y=270 relative-to="top-left"
-    opacity 1.0
-}
-
-

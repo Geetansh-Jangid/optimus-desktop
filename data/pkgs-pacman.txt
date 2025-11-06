@@ -1,7 +1,7 @@
 alacritty
 btop
 hyprlock
-kitty
+foot
 waybar
 normcap
 nwg-look

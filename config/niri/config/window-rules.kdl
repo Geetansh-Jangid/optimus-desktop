@@ -152,15 +152,3 @@ window-rule {
     default-floating-position x=480 y=270 relative-to="top-left"
     opacity 1.0
 }
-
-// wallpaper ui
-window-rule {
-    match app-id=r#"kitty"# title="^change-wallpaper"
-    open-floating true
-    default-column-width { proportion 0.7; }
-    default-window-height { proportion 0.5; }
-    default-floating-position x=288 y=270 relative-to="top-left"
-    opacity 1.0
-}
-
-
