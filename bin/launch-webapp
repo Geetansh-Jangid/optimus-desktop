@@ -1,8 +1,16 @@
-
 #!/usr/bin/env bash
 
 # --- CONFIGURABLE PART ---
-WEBAPP_BROWSER="brave"   # can be brave, brave-browser, chromium, etc.
+# List of common Chromium-based browser executables, ordered by preference
+CHROME_BROWSERS=(
+    "google-chrome"
+    "google-chrome-stable"
+    "brave"
+    "chromium"
+    "microsoft-edge-stable"
+    "vivaldi"
+    "opera"
+)
 # --------------------------
 
 URL="$1"
@@ -12,5 +20,25 @@ if [ -z "$URL" ]; then
     exit 1
 fi
 
-# Open Brave in minimal app mode
+# 🔎 Detect the installed Chromium-based browser
+WEBAPP_BROWSER=""
+for BROWSER_EXE in "${CHROME_BROWSERS[@]}"; do
+    if command -v "$BROWSER_EXE" &> /dev/null; then
+        WEBAPP_BROWSER="$BROWSER_EXE"
+        break
+    fi
+done
+
+# 🛑 Check if a browser was found
+if [ -z "$WEBAPP_BROWSER" ]; then
+    echo "Error: Could not find any supported Chromium-based browser executable."
+    echo "Tried: ${CHROME_BROWSERS[*]}"
+    exit 1
+fi
+
+echo "Using detected browser: **$WEBAPP_BROWSER** to open web app for URL: **$URL**"
+
+# Open the detected browser in minimal app mode
+# Note: The specific flags for "app mode" and window controls may vary slightly, 
+# but --app is standard for all Chromium-based browsers.
 "$WEBAPP_BROWSER" --app="$URL" --enable-features=WindowControlsOverlay &
