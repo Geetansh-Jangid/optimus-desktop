@@ -1,8 +1,12 @@
 # 🚀 Optimus Desktop: Minimal Arch to Blazing Fast Desktop
 
-Optimus Desktop is a comprehensive set of scripts and configuration files designed to transform a minimal Arch Linux installation (ideally created via `archinstall`) into a feature-packed, powerful, and **blazingly fast** desktop environment centered around the **niri Wayland compositor**.
+Optimus Desktop is set of scripts that helps you to convert a minimal archinstall into a blazingly fast productive workspace. 
 
-If you're looking for a highly productive, responsive, and aesthetically pleasing desktop without the resource bloat of traditional environments, Optimus Desktop is your solution.
+## Navigation
+- [Prerequisites](https://github.com/Geetansh-Jangid/optimus-desktop?tab=readme-ov-file#%EF%B8%8F-prerequisites)
+- [Features](https://github.com/Geetansh-Jangid/optimus-desktop?tab=readme-ov-file#-features)
+- [Installation](https://github.com/Geetansh-Jangid/optimus-desktop?tab=readme-ov-file#-installation)
+- [Please Read this too]()
 
 ## ✨ Features
 
