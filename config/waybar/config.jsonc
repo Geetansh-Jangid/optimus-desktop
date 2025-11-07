@@ -7,21 +7,27 @@
   "modules-left": ["niri/workspaces"],
   "modules-center": ["niri/window"],
   "modules-right": [
-    "custom/playerctl",
     "clock",
+    "custom/playerctl",
     "pulseaudio",
     "backlight",
-    "network",
-    "cpu",
-    "memory",
-    "temperature",
+    "group/performance",
     "battery",
-    "disk",
-    "custom/uptime",
-    "custom/updates",
-    "custom/notification",
     "tray",
+    "custom/notification",
   ],
+  
+  "group/performance": {
+    "orientation": "inherit",
+    "drawer": {
+        // These settings control the hover-to-expand behavior
+        "transition-duration": 500,
+        "children-class": "resources-drawer",
+        "transition-left-to-right": true,
+        "click-to-reveal": false, // <--- This is the key setting
+    },
+    "modules": ["cpu", "memory", "disk", "temperature", "custom/uptime", "custom/updates"],
+  },
 
   "niri/workspaces": {
     "format": "{index}",
@@ -166,8 +172,8 @@
       "car": "󰄋",
       "default": ["󰕿", "󰖀", "󰕾"],
     },
-    "on-click": "pavucontrol",
-    "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pavucontrol",
     "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +2%",
     "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -2%",
   },
@@ -175,8 +181,8 @@
   "backlight": {
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞", "󰃟", "󰃠"],
-    "on-scroll-up": "brightnessctl set +5%",
-    "on-scroll-down": "brightnessctl set 5%-",
+    "on-scroll-up": "brightnessctl set +1.5%",
+    "on-scroll-down": "brightnessctl set 1.5%-",
   },
 
   "disk": {

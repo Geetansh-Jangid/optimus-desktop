@@ -288,6 +288,7 @@ window#waybar {
     background-color: transparent;
     padding: 0 10px;
     margin: 0 2px;
+    border-bottom: 2px solid #bde6fb; 
 }
 
 #tray > .passive {

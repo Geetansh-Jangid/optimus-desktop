@@ -99,7 +99,7 @@ window#waybar {
 #window, #mpd, #custom-weather, #custom-playerctl, #clock, #cpu,
 #memory, #temperature, #battery, #network, #pulseaudio,
 #backlight, #disk, #custom-uptime, #custom-updates, #custom-quote,
-#idle_inhibitor, #tray, #custom-notification {
+#idle_inhibitor, #custom-notification {
     padding: 0 10px;
     margin: 0 2px;
     border-bottom: 2px solid transparent;
@@ -270,6 +270,7 @@ window#waybar {
 #tray {
     background-color: transparent;
     padding: 0 10px;
+    border-bottom: 2px solid #BBF1DD;
     margin: 0 2px;
 }
 

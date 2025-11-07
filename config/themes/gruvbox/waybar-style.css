@@ -125,7 +125,7 @@ window#waybar {
 
 /* Workspaces styling */
 #workspaces button {
-    padding: 0 0px 0 0px;
+    padding: 0 15px 0 15px;
     background-color: transparent;
     color: @workspaces-color;
     margin: 0;
@@ -287,6 +287,7 @@ window#waybar {
 #tray {
     background-color: transparent;
     padding: 0 10px;
+    border-bottom: 2px solid #fcc8b4;
     margin: 0 2px;
 }
 
