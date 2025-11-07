@@ -3,6 +3,7 @@ btop
 hyprlock
 foot
 waybar
+cheese
 normcap
 nwg-look
 rofi
