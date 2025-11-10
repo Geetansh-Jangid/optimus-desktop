@@ -38,9 +38,9 @@
   },
 
   "custom/playerctl": {
-    "exec": "~/.local/bin/player.sh",
+    "exec": "~/.local/bin/playerctl.sh",
     "interval": 1,
-    "on-click": "playerctl play-pause",
+    "on-click": "~/.local/bin/playerctl.sh play-pause",
     "on-scroll-up": "playerctl next",
     "on-scroll-down": "playerctl previous",
     "tooltip": true,

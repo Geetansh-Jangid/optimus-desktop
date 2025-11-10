@@ -87,6 +87,15 @@ All primary configuration files are located within the `config/` directory in th
 
 Feel free to modify these files to tailor the environment to your specific needs.
 
+## FAQs
+
+1. Why niri?
+A. Because it's my favourite wm, and it's very power efficient and touchpad friendly imo which makes it a goto choice for laptops.
+
+2. Why is the repo size so big?
+A. Because it contains all the wallpapers too.
+
+
 ## 📄 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
