@@ -1,4 +1,4 @@
 sudo pacman -Syyu 
-paru -Syu
+yay -Syu
 notify-send "System Updated"
 show-done
