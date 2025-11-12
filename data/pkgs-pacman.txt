@@ -11,7 +11,8 @@ swaync
 niri
 rsync
 nodejs
-ttf-roboto-mono-nerd
+ttf-jetbrains-mono-nerd
+ttf-jetbrains-mono
 pavucontrol
 s-tui
 gdu
