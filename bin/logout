@@ -17,8 +17,8 @@ choice=$(printf "%s\n" "${options[@]}" | rofi -i -p "System:" -dmenu -theme-str 
 case "$choice" in
 "Power Off") systemctl poweroff ;;
 "Reboot") systemctl reboot ;;
-"Lock") swaylock ;;
+"Lock") hyprlock ;;
 "Suspend") systemctl suspend ;;
-"Logout") niri msg quit ;;
+"Logout") pkill niri ;;
 *) exit 0 ;;
 esac
