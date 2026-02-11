@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# --- 1. SETUP LOGGING (Crucial for Keybinds) ---
+LOGFILE="/tmp/lens_debug.log"
+exec > >(tee -a "$LOGFILE") 2>&1
+echo "--- Script started at $(date) ---"
+
+# --- 2. FIX PATH (Crucial for Window Managers) ---
+# This ensures the script finds 'launch-webapp', 'grim', etc.
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+# --- 3. PARSE ARGUMENTS ---
+WEBAPP_OPTS=""
+
+# Loop through all arguments passed to this script
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  --incognito)
+    echo "Incognito mode enabled."
+    WEBAPP_OPTS="--incognito"
+    shift # Move to next arg
+    ;;
+  *)
+    # Ignore unknown args or print help
+    shift
+    ;;
+  esac
+done
+
+# --- 4. CHECK DEPENDENCIES ---
+for cmd in grim slurp curl jq launch-webapp; do
+  if ! command -v $cmd &>/dev/null; then
+    notify-send -u critical "Lens Error" "Missing command: $cmd"
+    echo "Error: $cmd not found in PATH: $PATH"
+    exit 1
+  fi
+done
+
+# --- 5. TAKE SCREENSHOT ---
+echo "Selecting area..."
+# We capture the output to see if it failed
+if ! grim -g "$(slurp)" /tmp/image.png; then
+  echo "Screenshot cancelled by user."
+  exit 0
+fi
+
+# --- 6. UPLOAD IMAGE ---
+notify-send "Google Lens" "Uploading image..."
+echo "Uploading to uguu.se..."
+
+# QUOTES ADDED for Zsh compatibility: "files[]=@..."
+response=$(curl -sF "files[]=@/tmp/image.png" 'https://uguu.se/upload')
+
+# Extract URL using jq
+imageLink=$(echo "$response" | jq -r '.files[0].url')
+
+# Validation
+if [ "$imageLink" == "null" ] || [ -z "$imageLink" ]; then
+  notify-send -u critical "Lens Error" "Upload failed. Check logs."
+  echo "Server returned: $response"
+  exit 1
+fi
+
+echo "Image uploaded: $imageLink"
+target_url="https://lens.google.com/uploadbyurl?url=${imageLink}"
+
+# --- 7. LAUNCH WEBAPP ---
+echo "Launching webapp with opts: $WEBAPP_OPTS"
+
+# We pass $WEBAPP_OPTS (which contains --incognito or is empty)
+launch-webapp $WEBAPP_OPTS "$target_url" &
+disown
+
+# --- 8. CLEANUP ---
+rm /tmp/image.png
+echo "Done."

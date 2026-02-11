@@ -1,3 +1,5 @@
-apple-fonts
+webapp-manager
 volantes-cursors
+vicinae-bin
+awww-git
 waybar-module-pacman-updates-git

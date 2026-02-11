@@ -1,328 +1,207 @@
+/* --- Global Reset & Fonts --- */
 * {
   all: unset;
   font-size: 14px;
-  font-family: "SF Pro Display";
-  transition: 200ms;
+  font-family: "Adwaita Sans", sans-serif;
 }
 
-trough highlight {
-  background: #ECEFF4; /* nord6 */
+/* --- Main Control Center Panel --- */
+.control-center {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #3B4252;
+  border-radius: 0px;
+  background-color: #2E3440; /* nord0 */
+  color: #ECEFF4;           /* nord6 */
+  padding: 16px;
 }
 
-scale {
-  margin: 0 7px;
+/* --- Title Widget (Heading + Clear All) --- */
+.widget-title {
+  margin: 8px 5px;
 }
 
-scale trough {
-  margin: 0rem 1rem;
-  min-height: 8px;
-  min-width: 70px;
+.widget-title > label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ECEFF4;
+}
+
+.widget-title > button {
+  background: #3B4252;
+  border: 1px solid #434C5E;
+  padding: 5px 12px;
+  color: #ECEFF4;
   border-radius: 0px;
 }
 
-trough slider {
-  margin: -10px;
+.widget-title > button:hover {
+  background: #434C5E;
+  border-color: #88C0D0; /* nord8 accent */
+}
+
+/* --- DND Widget --- */
+.widget-dnd {
+  margin: 8px 5px;
+  font-weight: bold;
+}
+
+.widget-dnd > switch {
+  background: #3B4252;
+  border: 1px solid #434C5E;
   border-radius: 0px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
-  transition: all 0.2s ease;
-  background-color: #88C0D0; /* nord8 */
+  min-height: 24px;
+  min-width: 48px;
 }
 
-trough slider:hover {
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), 0 0 8px #88C0D0; /* nord8 */
+.widget-dnd > switch:checked {
+  background: #A3BE8C; /* nord14 green */
 }
 
-trough {
-  background-color: #3B4252; /* nord1 */
+.widget-dnd > switch slider {
+  background: #E5E9F0; /* nord5 */
+  border-radius: 0px;
+  margin: 2px;
 }
 
-/* notifications */
+/* --- Media Player (MPRIS) --- */
+.widget-mpris {
+  background: #3B4252;
+  border: 1px solid #434C5E;
+  margin: 10px 5px;
+  padding: 0px; 
+  overflow: hidden;
+}
+
+.widget-mpris-player {
+  background: transparent;
+  padding: 12px;
+}
+
+.mpris-overlay {
+  background-color: rgba(46, 52, 64, 0.75); /* Nord0 fade */
+}
+
+.widget-mpris-album-art {
+  border-radius: 0px;
+  -gtk-icon-size: 80px;
+}
+
+.widget-mpris-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ECEFF4;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris-subtitle {
+  font-size: 0.9rem;
+  color: #D8DEE9;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris button {
+  background: transparent;
+  color: #ECEFF4;
+  margin: 0 8px;
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+}
+
+.widget-mpris button:hover {
+  color: #88C0D0;
+}
+
+/* --- Notifications --- */
+
+/* Default Style for Floating Popups (7px Margin) */
 .notification-background {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #434C5E; /* nord2 */
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #434C5E;
   border-radius: 0px;
-  margin: 18px;
-  background: #2E3440; /* nord0 */
-  color: #ECEFF4;    /* nord6 */
-  padding: 0;
+  margin: 7px; /* Nord specific 7px margin */
+  background: #2E3440;
+}
+
+/* Specific Style for Notifications inside the panel */
+.control-center .notification-background {
+  margin: 10px 5px;
+  box-shadow: inset 0 0 0 1px #434C5E;
 }
 
 .notification-background .notification {
-  padding: 7px;
+  padding: 12px;
   border-radius: 0px;
 }
 
 .notification-background .notification.critical {
-  box-shadow: inset 0 0 7px 0 #BF616A; /* nord11 */
+  border: 1px solid #BF616A;
+  box-shadow: inset 0 0 7px 0 rgba(191, 97, 106, 0.5);
 }
 
-.notification .notification-content {
-  margin: 7px;
+.notification-content {
+  margin: 5px;
+  /* Use flex to align the image and text horizontally */
+  border-spacing: 10px;
 }
 
-.notification .notification-content overlay {
-  /* icons */
-  margin: 4px;
+.notification-default-image {
+  margin-right: 12px;
+  border-radius: 0px;
+}
+
+.notification-content overlay {
+  margin: 0 10px 0 0;
+}
+
+.notification-content overlay image {
+  -gtk-icon-size: 52px; /* Fixed size to stop it from bloating */
+  border-radius: 0px;
 }
 
 .notification-content .summary {
-  color: #ECEFF4;    /* nord6 */
-}
-
-.notification-content .time {
-  color: #D8DEE9;    /* nord4 */
+  font-weight: bold;
+  color: #ECEFF4;
 }
 
 .notification-content .body {
-  color: #E5E9F0;    /* nord5 */
-}
-
-.notification > *:last-child > * {
-  min-height: 3.4em;
+  color: #E5E9F0;
 }
 
 .notification-background .close-button {
-  margin: 7px;
+  margin: 5px;
+  background-color: #BF616A;
+  color: #2E3440;
   padding: 2px;
   border-radius: 0px;
-  color: #2E3440;    /* nord0 */
-  background-color: #BF616A; /* nord11 */
 }
 
 .notification-background .close-button:hover {
-  background-color: #D08770; /* nord12 - Using another Aurora color for hover */
+  background-color: #D08770;
 }
 
-.notification-background .close-button:active {
-  background-color: #EBCB8B; /* nord13 */
+.notification-action-buttons {
+  margin-top: 12px;
+  margin-bottom: 2px;
 }
 
 .notification .notification-action {
   border-radius: 0px;
-  color: #ECEFF4;    /* nord6 */
-  box-shadow: inset 0 0 0 1px #434C5E; /* nord2 */
+  color: #D8DEE9;           /* Nord Snow Storm (fg) */
+  background-color: #3B4252; /* Nord Polar Night (bg) */
+  box-shadow: inset 0 0 0 1px #4C566A; /* Nord Polar Night (accent) */
   margin: 4px;
   padding: 8px;
-  font-size: 0.2rem; /* controls the button size not text size*/
-}
-
-.notification .notification-action {
-  background-color: #3B4252; /* nord1 */
+  font-size: 1rem;
 }
 
 .notification .notification-action:hover {
-  background-color: #434C5E; /* nord2 */
+  background-color: #88C0D0; /* Nord Frost (Blue) */
+  color: #2E3440;           /* Darker text on hover */
 }
 
-.notification .notification-action:active {
-  background-color: #4C566A; /* nord3 */
-}
-
-.notification.critical progress {
-  background-color: #BF616A; /* nord11 */
-}
-
-.notification.low progress,
-.notification.normal progress {
-  background-color: #88C0D0; /* nord8 */
-}
-
-.notification progress,
-.notification trough,
-.notification progressbar {
-  border-radius: 0px;
-  padding: 3px 0;
-}
-
-/* control center */
-.control-center {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #3B4252; /* nord1 */
-  border-radius: 0px;
-  background-color: #2E3440; /* nord0 */
-  color: #ECEFF4;    /* nord6 */
-  padding: 14px;
-}
-
-.control-center .notification-background {
-  border-radius: 0px;
-  box-shadow: inset 0 0 0 1px #434C5E; /* nord2 */
-  margin: 4px 10px;
-}
-
-.control-center .notification-background .notification {
-  border-radius: 0px;
-}
-
-.control-center .notification-background .notification.low {
-  opacity: 0.8;
-}
-
-.control-center .widget-title > label {
-  color: #ECEFF4;    /* nord6 */
-  font-size: 1.3em;
-}
-
-.control-center .widget-title button {
-  border-radius: 0px;
-  color: #ECEFF4;    /* nord6 */
-  background-color: #3B4252; /* nord1 */
-  box-shadow: inset 0 0 0 1px #434C5E; /* nord2 */
-  padding: 8px;
-}
-
-.control-center .widget-title button:hover {
-  background-color: #434C5E; /* nord2 */
-}
-
-.control-center .widget-title button:active {
-  background-color: #4C566A; /* nord3 */
-}
-
-.control-center .notification-group {
-  margin-top: 10px;
-}
-
-.control-center .notification-group:focus .notification-background {
-  background-color: #3B4252; /* nord1 */
-}
-
+/* --- Scrollbar --- */
 scrollbar slider {
-  margin: -3px;
-  opacity: 0.8;
+  background: #4C566A;
+  border-radius: 0px;
 }
 
 scrollbar trough {
-  margin: 2px 0;
-}
-
-/* dnd */
-.widget-dnd {
-  margin-top: 5px;
-  border-radius: 0px;
-  font-size: 1.1rem;
-}
-
-.widget-dnd > switch {
-  font-size: initial;
-  border-radius: 0px;
-  background: #3B4252; /* nord1 */
-  box-shadow: none;
-}
-
-.widget-dnd > switch:checked {
-  background: #88C0D0; /* nord8 */
-}
-
-.widget-dnd > switch slider {
-  background: #4C566A; /* nord3 */
-  border-radius: 0px;
-}
-
-/* mpris */
-.widget-mpris-player {
-  background: #3B4252; /* nord1 */
-  border-radius: 0px;
-  color: #ECEFF4;    /* nord6 */
-}
-
-.mpris-overlay {
-  background-color: #3B4252; /* nord1 */
-  opacity: 0.9;
-  padding: 15px 10px;
-}
-
-.widget-mpris-album-art {
-  -gtk-icon-size: 100px;
-  border-radius: 0px;
-  margin: 0 10px;
-}
-
-.widget-mpris-title {
-  font-size: 1.2rem;
-  color: #ECEFF4;    /* nord6 */
-}
-
-.widget-mpris-subtitle {
-  font-size: 1rem;
-  color: #E5E9F0;    /* nord5 */
-}
-
-.widget-mpris button {
-  border-radius: 0px;
-  color: #ECEFF4;    /* nord6 */
-  margin: 0 5px;
-  padding: 2px;
-}
-
-.widget-mpris button image {
-  -gtk-icon-size: 1.8rem;
-}
-
-.widget-mpris button:hover {
-  background-color: #434C5E; /* nord2 */
-}
-
-.widget-mpris button:active {
-  background-color: #4C566A; /* nord3 */
-}
-
-.widget-mpris button:disabled {
-  opacity: 0.5;
-}
-
-.widget-menubar > box > .menu-button-bar > button > label {
-  font-size: 3rem;
-  padding: 0.5rem 2rem;
-}
-
-.widget-menubar > box > .menu-button-bar > :last-child {
-  color: #BF616A; /* nord11 */
-}
-
-.power-buttons button:hover,
-.powermode-buttons button:hover,
-.screenshot-buttons button:hover {
-  background: #3B4252; /* nord1 */
-}
-
-.control-center .widget-label > label {
-  color: #ECEFF4;    /* nord6 */
-  font-size: 2rem;
-}
-
-.widget-buttons-grid {
-  padding-top: 1rem;
-}
-
-.widget-buttons-grid > flowbox > flowboxchild > button label {
-  font-size: 2.5rem;
-}
-
-.widget-volume {
-  padding: 1rem 0;
-}
-
-.widget-volume label {
-  color: #81A1C1; /* nord9 */
-  padding: 0 1rem;
-}
-
-.widget-volume trough highlight {
-  background: #81A1C1; /* nord9 */
-}
-
-.widget-backlight trough highlight {
-  background: #EBCB8B; /* nord13 */
-}
-
-.widget-backlight label {
-  font-size: 1.5rem;
-  color: #EBCB8B; /* nord13 */
-}
-
-.widget-backlight .KB {
-  padding-bottom: 1rem;
-}
-
-.image {
-  padding-right: 0.5rem;
+  background: transparent;
 }

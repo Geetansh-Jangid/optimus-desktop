@@ -1,6 +1,6 @@
 
 input {
-    focus-follows-mouse
+//    focus-follows-mouse
     keyboard {
         xkb {
             // You can set rules, model, layout, variant and options.

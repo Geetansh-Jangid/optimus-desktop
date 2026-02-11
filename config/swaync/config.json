@@ -1,0 +1,29 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "positionX": "right",
+  "positionY": "top",
+  "control-center-width": 400,
+  "control-center-margin-top": 0,
+  "control-center-margin-right": 0,
+  "notification-window-width": 400,
+  "widgets": [
+    "title",
+    "dnd",
+    "mpris",
+    "notifications"
+  ],
+  "widget-config": {
+    "title": {
+      "text": "Notifications",
+      "clear-all-button": true,
+      "button-text": "Clear All"
+    },
+    "dnd": {
+      "text": "Do Not Disturb"
+    },
+    "mpris": {
+      "image-size": 80,
+      "image-radius": 0
+    }
+  }
+}

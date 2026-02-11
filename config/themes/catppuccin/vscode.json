@@ -1,5 +1,6 @@
 {
     "security.workspace.trust.untrustedFiles": "open",
     "workbench.colorTheme": "Catppuccin Mocha",
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', 'monospace', monospace"
 }

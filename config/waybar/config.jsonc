@@ -8,25 +8,22 @@
   "modules-center": ["niri/window"],
   "modules-right": [
     "clock",
-    "custom/playerctl",
     "pulseaudio",
-    "backlight",
-    "group/performance",
+    "group/stats",
     "battery",
     "tray",
-    "custom/notification",
   ],
   
-  "group/performance": {
+  "group/stats": {
     "orientation": "inherit",
     "drawer": {
         // These settings control the hover-to-expand behavior
-        "transition-duration": 500,
+        "transition-duration": 250,
         "children-class": "resources-drawer",
         "transition-left-to-right": true,
         "click-to-reveal": false, // <--- This is the key setting
     },
-    "modules": ["cpu", "memory", "disk", "temperature", "custom/uptime", "custom/updates"],
+    "modules": [ "memory", "temperature", "custom/uptime", "backlight", "cpu", "disk", "custom/updates"],
   },
 
   "niri/workspaces": {
@@ -35,30 +32,6 @@
 
   "niri/window": {
     "format": "{title}",
-  },
-
-  "custom/playerctl": {
-    "exec": "~/.local/bin/playerctl.sh",
-    "interval": 1,
-    "on-click": "~/.local/bin/playerctl.sh play-pause",
-    "on-scroll-up": "playerctl next",
-    "on-scroll-down": "playerctl previous",
-    "tooltip": true,
-  },
-
-  "custom/weather": {
-    "exec": "curl 'https://wttr.in/?format=1'",
-    "interval": 3600,
-    "format": "{}",
-    "tooltip": true,
-  },
-
-  "custom/quote": {
-    "format": "󰚛 {}",
-    "interval": 3600,
-    "exec": "fortune -s",
-    "on-click": "fortune | yad --text-info --width=400 --height=200 --title='Fortune'",
-    "tooltip": true,
   },
 
   "custom/updates": {
@@ -146,16 +119,7 @@
     "format-plugged": "󰚥 {capacity}%",
     "format-alt": "{icon} {time}",
     "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-  },
-
-  "network": {
-    "format-wifi": "󰖩 {essid} ({signalStrength}%)",
-    "format-ethernet": "󰈀 {ifname}",
-    "format-linked": "󰈀 {ifname} (No IP)",
-    "format-disconnected": "󰖪 Disconnected",
-    "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "tooltip-format": "{ifname}: {ipaddr}",
-    "on-click-right": "alacritty -e nmtui",
+    "on-click-right": "tlpui",
   },
 
   "pulseaudio": {
@@ -196,7 +160,35 @@
     "icon-size": 18,
     "spacing": 5,
   },
+  
+  /*
+  "network": {
+    "format-wifi": "󰖩 {essid} ({signalStrength}%)",
+    "format-ethernet": "󰈀 {ifname}",
+    "format-linked": "󰈀 {ifname} (No IP)",
+    "format-disconnected": "󰖪 Disconnected",
+    "format-alt": "{ifname}: {ipaddr}/{cidr}",
+    "tooltip-format": "{ifname}: {ipaddr}",
+    "on-click-right": "alacritty -e nmtui",
+  },
+  
+  "custom/playerctl": {
+    "exec": "~/.local/bin/playerctl.sh",
+    "interval": 1,
+    "on-click": "~/.local/bin/playerctl.sh play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous",
+    "tooltip": true,
+  },
 
+  "custom/quote": {
+    "format": "󰚛 {}",
+    "interval": 3600,
+    "exec": "fortune -s",
+    "on-click": "fortune | yad --text-info --width=400 --height=200 --title='Fortune'",
+    "tooltip": true,
+  },
+  
   "custom/notification": {
     "tooltip": false,
     "format": "{0} {icon}",
@@ -216,5 +208,5 @@
     "on-click": "swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
     "escape": true,
-  },
+  },*/
 }

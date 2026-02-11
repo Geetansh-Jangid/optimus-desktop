@@ -1,0 +1,64 @@
+/* --- Monochrome AMOLED Theme --- */
+@define-color background #000000;
+@define-color foreground #FFFFFF;
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+}
+
+window#waybar {
+    background-color: @background;
+    color: @foreground;
+}
+
+/* --- 1. THE SQUARE WORKSPACES (Left Side) --- */
+#workspaces {
+    margin: 0;
+    padding: 0;
+}
+
+#workspaces button {
+    /* Adjust this value to match your bar's height for a perfect square */
+    min-width: 25px; 
+    padding: 0;
+    margin: 0;
+    color: @foreground;
+    background-color: transparent;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    background-color: @foreground;
+    color: @background; /* Inverted for that solid block look */
+    font-weight: bold;
+}
+
+#workspaces button:hover {
+    background-color: #1a1a1a;
+}
+
+/* --- 2. STATUS MODULES (Right Side Drawer) --- */
+/* This section fixes the "congested" look by applying spacing 
+   only to the right-side modules and NOT the square buttons. */
+
+#clock, 
+#pulseaudio, 
+#cpu, 
+#memory, 
+#temperature, 
+#backlight, 
+#disk, 
+#battery, 
+#network,
+#custom-uptime,
+#custom-updates,
+#idle_inhibitor,
+#tray {
+    padding: 0 10px; /* Space out the text and icons */
+    margin: 0;
+    background-color: transparent; /* No blocks here, just clean text */
+    color: @foreground;
+}

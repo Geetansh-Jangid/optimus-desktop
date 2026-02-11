@@ -1,328 +1,208 @@
+/* --- Global Reset & Fonts --- */
 * {
   all: unset;
   font-size: 14px;
-  font-family: "SF Pro Display";
-  transition: 200ms;
+  font-family: "Adwaita Sans", sans-serif;
 }
 
-trough highlight {
-  background: #D3C6AA; /* Everforest fg */
-}
-
-scale {
-  margin: 0 7px;
-}
-
-scale trough {
-  margin: 0rem 1rem;
-  min-height: 8px;
-  min-width: 70px;
+/* --- Main Control Center Panel --- */
+.control-center {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #374145;
   border-radius: 0px;
-}
-
-trough slider {
-  margin: -10px;
-  border-radius: 0px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
-  transition: all 0.2s ease;
-  background-color: #83C092; /* Everforest aqua */
-}
-
-trough slider:hover {
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), 0 0 8px #83C092; /* Everforest aqua */
-}
-
-trough {
   background-color: #272E33; /* Everforest bg0 */
+  color: #D3C6AA;           /* Everforest fg */
+  padding: 16px;
 }
 
-/* notifications */
-.notification-background {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #374145; /* Everforest bg2 */
+/* --- Title Widget --- */
+.widget-title {
+  margin: 8px 5px;
+}
+
+.widget-title > label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #D3C6AA;
+}
+
+.widget-title > button {
+  background: #2D353B; /* Everforest bg1 */
+  border: 1px solid #374145;
+  padding: 5px 12px;
+  color: #D3C6AA;
   border-radius: 0px;
-  margin: 18px;
-  background: #272E33; /* Everforest bg0 */
-  color: #D3C6AA;    /* Everforest fg */
-  padding: 0;
+}
+
+.widget-title > button:hover {
+  background: #374145;
+  border-color: #83C092; /* Everforest aqua accent */
+}
+
+/* --- DND Widget --- */
+.widget-dnd {
+  margin: 8px 5px;
+  font-weight: bold;
+}
+
+.widget-dnd > switch {
+  background: #2D353B;
+  border: 1px solid #374145;
+  border-radius: 0px;
+  min-height: 24px;
+  min-width: 48px;
+}
+
+.widget-dnd > switch:checked {
+  background: #A7C080; /* Everforest green */
+}
+
+.widget-dnd > switch slider {
+  background: #D3C6AA;
+  border-radius: 0px;
+  margin: 2px;
+}
+
+/* --- Media Player (MPRIS) --- */
+.widget-mpris {
+  background: #2D353B;
+  border: 1px solid #374145;
+  margin: 10px 5px;
+  padding: 0px; 
+  overflow: hidden;
+}
+
+.widget-mpris-player {
+  background: transparent;
+  padding: 12px;
+}
+
+.mpris-overlay {
+  background-color: rgba(39, 46, 51, 0.75); /* Everforest bg0 fade */
+}
+
+.widget-mpris-album-art {
+  border-radius: 0px;
+  -gtk-icon-size: 80px;
+}
+
+.widget-mpris-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #D3C6AA;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris-subtitle {
+  font-size: 0.9rem;
+  color: #D3C6AA;
+  opacity: 0.8;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris button {
+  background: transparent;
+  color: #D3C6AA;
+  margin: 0 8px;
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+}
+
+.widget-mpris button:hover {
+  color: #83C092;
+}
+
+/* --- Notifications --- */
+
+/* Floating Popups (7px Margin) */
+.notification-background {
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #374145;
+  border-radius: 0px;
+  margin: 7px; 
+  background: #272E33;
+}
+
+/* Notifications inside the panel */
+.control-center .notification-background {
+  margin: 10px 5px;
+  background: #2D353B;
 }
 
 .notification-background .notification {
-  padding: 7px;
+  padding: 12px;
   border-radius: 0px;
 }
 
 .notification-background .notification.critical {
-  box-shadow: inset 0 0 7px 0 #E67E80; /* Everforest red */
+  border: 1px solid #E67E80;
+  box-shadow: inset 0 0 7px 0 rgba(230, 126, 128, 0.4);
 }
 
-.notification .notification-content {
-  margin: 7px;
+.notification-content {
+  margin: 5px;
+  /* Use flex to align the image and text horizontally */
+  border-spacing: 10px;
 }
 
-.notification .notification-content overlay {
-  /* icons */
-  margin: 4px;
+.notification-default-image {
+  margin-right: 12px;
+  border-radius: 0px;
+}
+
+.notification-content overlay {
+  margin: 0 10px 0 0;
+}
+
+.notification-content overlay image {
+  -gtk-icon-size: 52px; /* Fixed size to stop it from bloating */
+  border-radius: 0px;
 }
 
 .notification-content .summary {
-  color: #D3C6AA;    /* Everforest fg */
-}
-
-.notification-content .time {
-  color: #D3C6AA;    /* Everforest fg */
+  font-weight: bold;
+  color: #D3C6AA;
 }
 
 .notification-content .body {
-  color: #D3C6AA;    /* Everforest fg */
-}
-
-.notification > *:last-child > * {
-  min-height: 3.4em;
+  color: #D3C6AA;
 }
 
 .notification-background .close-button {
-  margin: 7px;
+  margin: 5px;
+  background-color: #E67E80;
+  color: #272E33;
   padding: 2px;
   border-radius: 0px;
-  color: #272E33;    /* Everforest bg0 */
-  background-color: #E67E80; /* Everforest red */
 }
 
 .notification-background .close-button:hover {
-  background-color: #E69875; /* Everforest orange */
+  background-color: #E69875;
 }
 
-.notification-background .close-button:active {
-  background-color: #DBBC7F; /* Everforest yellow */
+.notification-action-buttons {
+  margin-top: 12px;
+  margin-bottom: 2px;
 }
 
 .notification .notification-action {
   border-radius: 0px;
-  color: #D3C6AA;    /* Everforest fg */
-  box-shadow: inset 0 0 0 1px #374145; /* Everforest bg2 */
+  color: #D3C6AA;
+  background-color: #2D353B;
+  box-shadow: inset 0 0 0 1px #374145;
   margin: 4px;
   padding: 8px;
-  font-size: 0.2rem; /* controls the button size not text size*/
-}
-
-.notification .notification-action {
-  background-color: #272E33; /* Everforest bg0 */
+  font-size: 1rem;
 }
 
 .notification .notification-action:hover {
-  background-color: #374145; /* Everforest bg2 */
+  background-color: #83C092;
+  color: #272E33;
 }
 
-.notification .notification-action:active {
-  background-color: #414B50; /* Everforest bg3 */
-}
-
-.notification.critical progress {
-  background-color: #E67E80; /* Everforest red */
-}
-
-.notification.low progress,
-.notification.normal progress {
-  background-color: #83C092; /* Everforest aqua */
-}
-
-.notification progress,
-.notification trough,
-.notification progressbar {
-  border-radius: 0px;
-  padding: 3px 0;
-}
-
-/* control center */
-.control-center {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #272E33; /* Everforest bg0 */
-  border-radius: 0px;
-  background-color: #272E33; /* Everforest bg0 */
-  color: #D3C6AA;    /* Everforest fg */
-  padding: 14px;
-}
-
-.control-center .notification-background {
-  border-radius: 0px;
-  box-shadow: inset 0 0 0 1px #374145; /* Everforest bg2 */
-  margin: 4px 10px;
-}
-
-.control-center .notification-background .notification {
-  border-radius: 0px;
-}
-
-.control-center .notification-background .notification.low {
-  opacity: 0.8;
-}
-
-.control-center .widget-title > label {
-  color: #D3C6AA;    /* Everforest fg */
-  font-size: 1.3em;
-}
-
-.control-center .widget-title button {
-  border-radius: 0px;
-  color: #D3C6AA;    /* Everforest fg */
-  background-color: #272E33; /* Everforest bg0 */
-  box-shadow: inset 0 0 0 1px #374145; /* Everforest bg2 */
-  padding: 8px;
-}
-
-.control-center .widget-title button:hover {
-  background-color: #374145; /* Everforest bg2 */
-}
-
-.control-center .widget-title button:active {
-  background-color: #414B50; /* Everforest bg3 */
-}
-
-.control-center .notification-group {
-  margin-top: 10px;
-}
-
-.control-center .notification-group:focus .notification-background {
-  background-color: #272E33; /* Everforest bg0 */
-}
-
+/* --- Scrollbar --- */
 scrollbar slider {
-  margin: -3px;
-  opacity: 0.8;
-}
-
-scrollbar trough {
-  margin: 2px 0;
-}
-
-/* dnd */
-.widget-dnd {
-  margin-top: 5px;
-  border-radius: 0px;
-  font-size: 1.1rem;
-}
-
-.widget-dnd > switch {
-  font-size: initial;
-  border-radius: 0px;
-  background: #272E33; /* Everforest bg0 */
-  box-shadow: none;
-}
-
-.widget-dnd > switch:checked {
-  background: #83C092; /* Everforest aqua */
-}
-
-.widget-dnd > switch slider {
   background: #414B50; /* Everforest bg3 */
   border-radius: 0px;
 }
 
-/* mpris */
-.widget-mpris-player {
-  background: #272E33; /* Everforest bg0 */
-  border-radius: 0px;
-  color: #D3C6AA;    /* Everforest fg */
-}
-
-.mpris-overlay {
-  background-color: #272E33; /* Everforest bg0 */
-  opacity: 0.9;
-  padding: 15px 10px;
-}
-
-.widget-mpris-album-art {
-  -gtk-icon-size: 100px;
-  border-radius: 0px;
-  margin: 0 10px;
-}
-
-.widget-mpris-title {
-  font-size: 1.2rem;
-  color: #D3C6AA;    /* Everforest fg */
-}
-
-.widget-mpris-subtitle {
-  font-size: 1rem;
-  color: #D3C6AA;    /* Everforest fg */
-}
-
-.widget-mpris button {
-  border-radius: 0px;
-  color: #D3C6AA;    /* Everforest fg */
-  margin: 0 5px;
-  padding: 2px;
-}
-
-.widget-mpris button image {
-  -gtk-icon-size: 1.8rem;
-}
-
-.widget-mpris button:hover {
-  background-color: #374145; /* Everforest bg2 */
-}
-
-.widget-mpris button:active {
-  background-color: #414B50; /* Everforest bg3 */
-}
-
-.widget-mpris button:disabled {
-  opacity: 0.5;
-}
-
-.widget-menubar > box > .menu-button-bar > button > label {
-  font-size: 3rem;
-  padding: 0.5rem 2rem;
-}
-
-.widget-menubar > box > .menu-button-bar > :last-child {
-  color: #E67E80; /* Everforest red */
-}
-
-.power-buttons button:hover,
-.powermode-buttons button:hover,
-.screenshot-buttons button:hover {
-  background: #272E33; /* Everforest bg0 */
-}
-
-.control-center .widget-label > label {
-  color: #D3C6AA;    /* Everforest fg */
-  font-size: 2rem;
-}
-
-.widget-buttons-grid {
-  padding-top: 1rem;
-}
-
-.widget-buttons-grid > flowbox > flowboxchild > button label {
-  font-size: 2.5rem;
-}
-
-.widget-volume {
-  padding: 1rem 0;
-}
-
-.widget-volume label {
-  color: #7FBBB3; /* Everforest blue */
-  padding: 0 1rem;
-}
-
-.widget-volume trough highlight {
-  background: #7FBBB3; /* Everforest blue */
-}
-
-.widget-backlight trough highlight {
-  background: #DBBC7F; /* Everforest yellow */
-}
-
-.widget-backlight label {
-  font-size: 1.5rem;
-  color: #DBBC7F; /* Everforest yellow */
-}
-
-.widget-backlight .KB {
-  padding-bottom: 1rem;
-}
-
-.image {
-  padding-right: 0.5rem;
+scrollbar trough {
+  background: transparent;
 }

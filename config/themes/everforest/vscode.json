@@ -1,5 +1,5 @@
 {
     "security.workspace.trust.untrustedFiles": "open",
-    "workbench.colorTheme": "Everforest Dark",
+    "workbench.colorTheme": "Everforest Pro Dark",
     "files.autoSave": "afterDelay"
 }

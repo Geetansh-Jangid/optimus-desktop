@@ -4,23 +4,20 @@
 THEMES_DIR="$HOME/.config/themes"
 
 # Define symlink targets in the ~/.config/current/ folder
-LAZYVIM_LINK="$HOME/.config/current/lazyvim"
 ALACRITTY_LINK="$HOME/.config/current/alacritty-theme.toml"
-ROFI_LINK="$HOME/.config/current/rofi-theme.rasi"
 NIRI_WALLPAPER_DIR_LINK="$HOME/.config/current/wallpapers"
 SWAYNC_LINK="$HOME/.config/current/swaync-style.css"
-QBITTORRENT_LINK="$HOME/Qbittorrent/theme/qbittorrent.qbtheme"
 
 # NEW WAYBAR SYMLINK TARGET
 WAYBAR_STYLE_LINK="$HOME/.config/current/waybar-style.css"
 
 # Define the explicit VS Code settings symlink path
 VSCODE_SETTINGS_LINK="/home/geetansh/.config/Code/User/settings.json"
+VICINAE_CONFIG="$HOME/.config/vicinae/settings.json"
 
 # Define the fixed, physical files/directories for Direct Copy/Replacement/Sync
 NIRI_LAYOUT_TARGET_FILE="$HOME/.config/niri/config/layout.kdl"
 NWG_LOOK_TARGET_DIR="$HOME/.local/share/nwg-look"
-BTOP_THEMES_DIR="$HOME/.config/btop/themes"
 
 # Define the path to scripts
 WALLPAPER_SETTER_SCRIPT="$HOME/.local/bin/wallpaper.sh"
@@ -30,18 +27,29 @@ WALLPAPER_SETTER_SCRIPT="$HOME/.local/bin/wallpaper.sh"
 NWG_LOOK_CONFIG_FILENAME="gsettings"
 NWG_LOOK_LINK="$NWG_LOOK_TARGET_DIR/$NWG_LOOK_CONFIG_FILENAME"
 
+# BTOP THEME FILE
+BTOP_CONFIG="$HOME/.config/btop/themes/btop.theme"
+
 # ----------------------------------------------------------------------
 # 1. Generate the list of available themes from directory names (FIXED PREDICATE)
 # ----------------------------------------------------------------------
 THEME_LIST=$(find "$THEMES_DIR" -maxdepth 1 -mindepth 1 -type d -print | sed "s|^$THEMES_DIR/||" | sort)
 
 # --- 2. Use Rofi (in dmenu mode) to get the user's selection ---
+#SELECTED_THEME=$(
+#  echo -e "$THEME_LIST" | rofi \
+#    -dmenu \
+#    -i \
+#    -p "Select Global Theme" \
+#    -lines 8 \
+#    -theme-str 'configuration {show-icons: false;}'
+#)
+
+# --- 2. Use Vicinae (in dmenu mode) to get the user's selection ---
 SELECTED_THEME=$(
-  echo -e "$THEME_LIST" | rofi \
-    -dmenu \
-    -i \
-    -p "Select Global Theme" \
-    -lines 8
+  echo -e "$THEME_LIST" | vicinae dmenu \
+    --placeholder "Select Global Theme" \
+    --no-quick-look
 )
 
 # --- 3. Check selection and execute theme switching logic ---
@@ -54,30 +62,12 @@ fi
 echo "Switching theme to: $SELECTED_THEME"
 
 # ----------------------------------------------------------------------
-# 3a. Update LazyVim Theme (Symlink)
-# ----------------------------------------------------------------------
-LAZYVIM_TARGET="$THEMES_DIR/$SELECTED_THEME/lazyvim"
-if [ -f "$LAZYVIM_TARGET" ]; then
-  ln -snf "$LAZYVIM_TARGET" "$LAZYVIM_LINK"
-  echo " -> LazyVim theme link updated."
-fi
-
-# ----------------------------------------------------------------------
 # 3b. Update Alacritty Theme (Symlink)
 # ----------------------------------------------------------------------
 ALACRITTY_TARGET="$THEMES_DIR/$SELECTED_THEME/alacritty-theme.toml"
 if [ -f "$ALACRITTY_TARGET" ]; then
   ln -snf "$ALACRITTY_TARGET" "$ALACRITTY_LINK"
   echo " -> Alacritty theme link updated."
-fi
-
-# ----------------------------------------------------------------------
-# 3c. Update Rofi Theme (Symlink)
-# ----------------------------------------------------------------------
-ROFI_TARGET="$THEMES_DIR/$SELECTED_THEME/rofi/main.rasi"
-if [ -f "$ROFI_TARGET" ]; then
-  ln -snf "$ROFI_TARGET" "$ROFI_LINK"
-  echo " -> Rofi theme link updated."
 fi
 
 # ----------------------------------------------------------------------
@@ -175,33 +165,19 @@ if [ -f "$SWAYNC_TARGET" ]; then
 fi
 
 # ----------------------------------------------------------------------
-# 3i. Update qBittorrent Theme (Symlink)
-# ----------------------------------------------------------------------
-QBITTORRENT_TARGET="$THEMES_DIR/$SELECTED_THEME/qbittorrent.qbt"
-
-if [ -f "$QBITTORRENT_TARGET" ]; then
-  # Ensure the parent directory for the symlink exists
-  mkdir -p "$(dirname "$QBITTORRENT_LINK")"
-
-  ln -snf "$QBITTORRENT_TARGET" "$QBITTORRENT_LINK"
-  echo " -> qBittorrent config link updated."
-  echo " -> Note: qBittorrent must be restarted manually to apply changes."
-fi
-
-# ----------------------------------------------------------------------
-# 3j. Update Btop Theme (Symlink)
+# 3i. Update btop Theme (Symlink)
 # ----------------------------------------------------------------------
 BTOP_TARGET="$THEMES_DIR/$SELECTED_THEME/btop.theme"
-BTOP_LINK="$BTOP_THEMES_DIR/btop.theme"
 
 if [ -f "$BTOP_TARGET" ]; then
-  # Ensure the destination directory exists
-  mkdir -p "$BTOP_THEMES_DIR"
-
-  # Create the symlink
-  ln -snf "$BTOP_TARGET" "$BTOP_LINK"
-  echo " -> Btop theme symlink updated."
-  echo " -> Note: Btop must be restarted manually to apply changes."
+    # Ensure the destination directory exists before symlinking
+    mkdir -p "$(dirname "$BTOP_CONFIG")"
+    
+    ln -snf "$BTOP_TARGET" "$BTOP_CONFIG"
+    echo " -> btop theme link updated."
+    
+    # Note: btop usually detects theme changes on its next launch, 
+    # so a restart command is typically not required here.
 fi
 
 # ----------------------------------------------------------------------
@@ -216,6 +192,26 @@ if [ -f "$VSCODE_TARGET" ]; then
   ln -snf "$VSCODE_TARGET" "$VSCODE_SETTINGS_LINK"
   echo " -> VS Code settings symlink updated."
   echo " -> Note: VS Code will automatically detect changes, but may require focusing/unfocusing the window."
+fi
+
+# ----------------------------------------------------------------------
+# 3n. Update Vicinae Launcher Theme (Read from theme text file)
+# ----------------------------------------------------------------------
+VICINAE_THEME_FILE="$THEMES_DIR/$SELECTED_THEME/vicinae"
+
+if [ -f "$VICINAE_THEME_FILE" ] && [ -f "$VICINAE_CONFIG" ]; then
+  # 1. Read the theme name from the text file
+  VICINAE_NAME=$(cat "$VICINAE_THEME_FILE" | tr -d '[:space:]')
+
+  echo " -> Read Vicinae theme name: $VICINAE_NAME"
+
+  # 2. Update the JSON config using sed
+  # This finds "name": "anything" and replaces it with the name from the file
+  sed -i "s/\"name\": \".*\"/\"name\": \"$VICINAE_NAME\"/" "$VICINAE_CONFIG"
+
+  echo " -> Vicinae config.json updated."
+else
+  echo " -> Warning: Missing Vicinae theme file at $VICINAE_THEME_FILE or config at $VICINAE_CONFIG"
 fi
 
 # ----------------------------------------------------------------------

@@ -1,7 +1,7 @@
 
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 8
+    gaps 4
     background-color "transparent"
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -87,7 +87,7 @@ layout {
         // If you enable the border, you probably want to disable the focus ring.
         // off
 
-        width 2
+        width 1.4
         active-color "#d3c6aa"
         inactive-color "#434c5e"
 

@@ -1,0 +1,176 @@
+#!/bin/bash
+
+# --- CONFIGURATION ---
+INTERVAL=2
+TOTAL_DURATION=30
+MIN_VALID_RESULT_LENGTH=300
+SOURCE_TYPE="monitor"  # Default to System Audio (Monitor)
+TMP_PATH="/tmp/quickshell/media/songrec"
+TMP_RAW="$TMP_PATH/recording.raw"
+TMP_MP3="$TMP_PATH/recording.mp3"
+TMP_ICON="$TMP_PATH/cover.jpg"
+
+# --- ARGUMENT PARSING ---
+# This handles the -s flag (e.g., -s input)
+while getopts "i:t:s:" opt; do
+  case $opt in
+    i) INTERVAL=$OPTARG ;;
+    t) TOTAL_DURATION=$OPTARG ;;
+    s) SOURCE_TYPE=$OPTARG ;;
+    *) exit 1 ;;
+  esac
+done
+
+# --- AUDIO SOURCE SETUP ---
+if [ "$SOURCE_TYPE" = "monitor" ]; then
+    # Captures what comes OUT of the speakers
+    MONITOR_SOURCE=$(pactl get-default-sink).monitor
+elif [ "$SOURCE_TYPE" = "input" ]; then
+    # Captures what goes INTO the microphone
+    MONITOR_SOURCE=$(pactl info | grep "Default Source:" | awk '{print $3}' || true)
+else
+    echo "Invalid source type. Use 'monitor' or 'input'."
+    exit 1
+fi
+
+# --- DEPENDENCY CHECK ---
+# Ensures you have the necessary tools installed
+if ! command -v songrec >/dev/null 2>&1 || \
+   ! command -v parec >/dev/null 2>&1 || \
+   ! command -v ffmpeg >/dev/null 2>&1 || \
+   ! command -v jq >/dev/null 2>&1 || \
+   ! command -v curl >/dev/null 2>&1 || \
+   ! command -v notify-send >/dev/null 2>&1; then
+    notify-send "SongRec Error" "Missing dependencies: jq, curl, ffmpeg, or songrec."
+    exit 1
+fi
+
+if [ -z "$MONITOR_SOURCE" ] || ! pactl list short sources | grep -q "$MONITOR_SOURCE"; then
+    notify-send "SongRec Error" "Could not find audio source: $MONITOR_SOURCE"
+    exit 1
+fi
+
+# --- CLEANUP FUNCTION ---
+cleanup() {
+    rm -f "$TMP_RAW" "$TMP_MP3" "$TMP_ICON"
+    pkill -P $$ parec >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+# --- START RECORDING ---
+mkdir -p "$TMP_PATH"
+
+# Notify user that listening has started
+# The ID 'songrec-listen' allows the next notification to overwrite this one
+notify-send -i audio-input-microphone \
+    -h string:x-canonical-private-synchronous:songrec-listen \
+    "SongRec ($SOURCE_TYPE)" "Listening for music..." -t 5000
+
+# Start recording in background
+parec --device="$MONITOR_SOURCE" --format=s16le --rate=44100 --channels=2 > "$TMP_RAW" &
+START_TIME=$(date +%s)
+
+# --- MAIN LOOP ---
+while true; do
+    sleep "$INTERVAL"
+    CURRENT_TIME=$(date +%s)
+    ELAPSED=$((CURRENT_TIME - START_TIME))
+
+    # Timeout check
+    if (( ELAPSED >= TOTAL_DURATION )); then
+        notify-send -i dialog-error \
+            -h string:x-canonical-private-synchronous:songrec-listen \
+            "SongRec" "Timed out: No song found."
+        exit 0
+    fi
+
+    # Convert RAW to MP3 for songrec
+    ffmpeg -f s16le -ar 44100 -ac 2 -i "$TMP_RAW" -acodec libmp3lame -y -hide_banner -loglevel error "$TMP_MP3" 2>/dev/null
+    
+    # Run recognition
+    RESULT=$(songrec audio-file-to-recognized-song "$TMP_MP3" 2>/dev/null || true)
+
+    # Check if a valid match was found
+    if echo "$RESULT" | grep -q '"matches": \[' && [ ${#RESULT} -gt $MIN_VALID_RESULT_LENGTH ]; then
+        
+        # --- PARSE JSON DATA ---
+        TITLE=$(echo "$RESULT" | jq -r '.track.title')
+        ARTIST=$(echo "$RESULT" | jq -r '.track.subtitle')
+        IMAGE_URL=$(echo "$RESULT" | jq -r '.track.images.coverart // .track.images.background // empty')
+        
+        # Extract Deep Links (Spotify / YouTube)
+        SPOTIFY_URI=$(echo "$RESULT" | jq -r '.track.hub.providers[]? | select(.type=="SPOTIFY") | .actions[]? | select(.type=="uri") | .uri' | head -n 1)
+        YOUTUBE_URI=$(echo "$RESULT" | jq -r '.track.hub.providers[]? | select(.type=="YOUTUBEMUSIC") | .actions[]? | select(.type=="uri") | .uri' | head -n 1)
+
+        # Download Cover Art
+        if [ -n "$IMAGE_URL" ] && [ "$IMAGE_URL" != "null" ]; then
+            curl -s "$IMAGE_URL" -o "$TMP_ICON"
+        else
+            TMP_ICON="audio-x-generic" # Fallback icon
+        fi
+
+        # --- SEND INTERACTIVE NOTIFICATION ---
+        # --wait: Pauses script until user clicks a button
+        # --action: Defines the buttons
+        ACTION=$(notify-send \
+            -i "$TMP_ICON" \
+            -h string:x-canonical-private-synchronous:songrec-listen \
+            --action="spotify=Open in Spotify" \
+            --action="youtube=Open in YouTube" \
+            --wait \
+            "Song Found!" \
+            "$TITLE\nby $ARTIST")
+
+        # --- HANDLE BUTTON CLICKS ---
+        case "$ACTION" in
+            "spotify")
+                if [ -n "$SPOTIFY_URI" ] && [ "$SPOTIFY_URI" != "null" ]; then
+                    xdg-open "$SPOTIFY_URI"
+                else
+                    # Fallback search
+                    xdg-open "https://open.spotify.com/search/$TITLE $ARTIST"
+                fi
+                ;;
+            "youtube")
+                if [ -n "$YOUTUBE_URI" ] && [ "$YOUTUBE_URI" != "null" ]; then
+                    xdg-open "$YOUTUBE_URI"
+                else
+                    # Fallback search
+                    xdg-open "https://music.youtube.com/search?q=$TITLE $ARTIST"
+                fi
+                ;;
+        esac
+
+        # Output JSON to terminal (optional, based on original script)
+        echo "$RESULT"
+        exit 0
+    fi
+done
+      "Song Found!" \
+      "$TITLE\nby $ARTIST")
+
+    # Handle Button Clicks
+    case "$ACTION" in
+    "spotify")
+      if [ -n "$SPOTIFY_URI" ] && [ "$SPOTIFY_URI" != "null" ]; then
+        xdg-open "$SPOTIFY_URI"
+      else
+        # Fallback search if deep link missing
+        xdg-open "https://open.spotify.com/search/$TITLE $ARTIST"
+      fi
+      ;;
+    "youtube")
+      if [ -n "$YOUTUBE_URI" ] && [ "$YOUTUBE_URI" != "null" ]; then
+        ~/.local/bin/launch-webapp "$YOUTUBE_URI"
+      else
+        # Fallback search
+        ~/.local/bin/launch-webapp "https://music.youtube.com/search?q=$TITLE $ARTIST"
+      fi
+      ;;
+    esac
+
+    # Print original JSON to stdout (as per original script behavior)
+    echo "$RESULT"
+    exit 0
+  fi
+done

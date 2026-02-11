@@ -1,5 +1,1 @@
-{
-    "security.workspace.trust.untrustedFiles": "open",
-    "workbench.colorTheme": "Nord",
-    "files.autoSave": "afterDelay"
-}
+/home/geetansh/.config/themes/catppuccin/vscode.json

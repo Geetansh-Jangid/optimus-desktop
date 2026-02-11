@@ -1,328 +1,221 @@
+/* --- Global Reset & Fonts --- */
 * {
   all: unset;
   font-size: 14px;
-  font-family: "SF Pro Display";
+  font-family: "Adwaita Sans", "Inter", sans-serif;
   transition: 200ms;
 }
 
-trough highlight {
-  background: #cdd6f4;
+/* --- Main Control Center Panel --- */
+.control-center {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #44475a;
+  border-radius: 0px;
+  background-color: #282a36; /* Dracula Background */
+  color: #f8f8f2;           /* Dracula Foreground */
+  padding: 16px;
 }
 
-scale {
-  margin: 0 7px;
+/* --- Title Widget (Heading + Clear All) --- */
+.widget-title {
+  margin: 8px 5px;
 }
 
-scale trough {
-  margin: 0rem 1rem;
-  min-height: 8px;
-  min-width: 70px;
+.widget-title > label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #bd93f9; /* Purple accent */
+}
+
+.widget-title > button {
+  background: #44475a; /* Current Line */
+  border: 1px solid #6272a4; /* Comment */
+  padding: 5px 12px;
+  color: #f8f8f2;
   border-radius: 0px;
 }
 
-trough slider {
-  margin: -10px;
+.widget-title > button:hover {
+  background: #6272a4;
+  border-color: #8be9fd; /* Cyan accent */
+}
+
+/* --- DND Widget --- */
+.widget-dnd {
+  margin: 8px 5px;
+  font-weight: bold;
+}
+
+.widget-dnd > switch {
+  background: #44475a;
+  border: 1px solid #6272a4;
   border-radius: 0px;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
-  transition: all 0.2s ease;
-  background-color: #89b4fa;
+  min-height: 24px;
+  min-width: 48px;
 }
 
-trough slider:hover {
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), 0 0 8px #89b4fa;
+.widget-dnd > switch:checked {
+  background: #50fa7b; /* Green */
 }
 
-trough {
-  background-color: #313244;
+.widget-dnd > switch slider {
+  background: #f8f8f2;
+  border-radius: 0px;
+  margin: 2px;
 }
 
-/* notifications */
+/* --- Media Player (MPRIS) --- */
+.widget-mpris {
+  background: #282a36;
+  border: 1px solid #44475a;
+  margin: 10px 5px;
+  padding: 0px; 
+  overflow: hidden;
+}
+
+.widget-mpris-player {
+  background: transparent;
+  padding: 12px;
+}
+
+.mpris-overlay {
+  background-color: rgba(40, 42, 54, 0.8); /* Dark Dracula fade */
+}
+
+.widget-mpris-album-art {
+  border-radius: 0px;
+  -gtk-icon-size: 80px;
+}
+
+.widget-mpris-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #f8f8f2;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris-subtitle {
+  font-size: 0.9rem;
+  color: #bd93f9;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris button {
+  background: transparent;
+  color: #f8f8f2;
+  margin: 0 8px;
+}
+
+.widget-mpris button:hover {
+  color: #ff79c6; /* Pink accent */
+}
+
+/* --- Notifications --- */
+
+/* Default Style for Floating Popups (7px Margin) */
 .notification-background {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #45475a;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #44475a;
   border-radius: 0px;
-  margin: 18px;
-  background: #181825;
-  color: #cdd6f4;
-  padding: 0;
+  margin: 7px; 
+  background: #282a36;
+}
+
+/* Notifications inside the panel */
+.control-center .notification-background {
+  margin: 10px 5px;
+  background: #44475a;
 }
 
 .notification-background .notification {
-  padding: 7px;
+  padding: 12px;
   border-radius: 0px;
 }
 
 .notification-background .notification.critical {
-  box-shadow: inset 0 0 7px 0 #f38ba8;
+  border: 1px solid #ff5555; /* Red */
+  box-shadow: inset 0 0 7px 0 rgba(255, 85, 85, 0.4);
 }
 
-.notification .notification-content {
-  margin: 7px;
+.notification-content {
+  margin: 5px;
+  /* Use flex to align the image and text horizontally */
+  border-spacing: 10px;
 }
 
-.notification .notification-content overlay {
-  /* icons */
-  margin: 4px;
+.notification-default-image {
+  margin-right: 12px;
+  border-radius: 0px;
+}
+
+.notification-content overlay {
+  margin: 0 10px 0 0;
+}
+
+.notification-content overlay image {
+  -gtk-icon-size: 52px; /* Fixed size to stop it from bloating */
+  border-radius: 0px;
 }
 
 .notification-content .summary {
-  color: #cdd6f4;
-}
-
-.notification-content .time {
-  color: #a6adc8;
+  font-weight: bold;
+  color: #f8f8f2;
 }
 
 .notification-content .body {
-  color: #bac2de;
-}
-
-.notification > *:last-child > * {
-  min-height: 3.4em;
+  color: #f8f8f2;
 }
 
 .notification-background .close-button {
-  margin: 7px;
+  margin: 5px;
+  background-color: #ff5555;
+  color: #282a36;
   padding: 2px;
   border-radius: 0px;
-  color: #1e1e2e;
-  background-color: #f38ba8;
 }
 
 .notification-background .close-button:hover {
-  background-color: #eba0ac;
+  background-color: #ffb86c; /* Orange */
 }
 
-.notification-background .close-button:active {
-  background-color: #f5c2e7;
+.notification-action-buttons {
+  margin-top: 12px;
+  margin-bottom: 2px;
 }
 
 .notification .notification-action {
   border-radius: 0px;
-  color: #cdd6f4;
-  box-shadow: inset 0 0 0 1px #45475a;
+  color: #f8f8f2;
+  background-color: #44475a;
+  box-shadow: inset 0 0 0 1px #6272a4;
   margin: 4px;
   padding: 8px;
-  font-size: 0.2rem; /* controls the button size not text size*/
-}
-
-.notification .notification-action {
-  background-color: #313244;
+  font-size: 1rem;
 }
 
 .notification .notification-action:hover {
-  background-color: #45475a;
+  background-color: #bd93f9;
+  color: #282a36;
 }
 
-.notification .notification-action:active {
-  background-color: #585b70;
-}
-
-.notification.critical progress {
-  background-color: #f38ba8;
-}
-
-.notification.low progress,
-.notification.normal progress {
-  background-color: #89b4fa;
-}
-
-.notification progress,
-.notification trough,
-.notification progressbar {
-  border-radius: 0px;
-  padding: 3px 0;
-}
-
-/* control center */
-.control-center {
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px #313244;
-  border-radius: 0px;
-  background-color: #1e1e2e;
-  color: #cdd6f4;
-  padding: 14px;
-}
-
-.control-center .notification-background {
-  border-radius: 0px;
-  box-shadow: inset 0 0 0 1px #45475a;
-  margin: 4px 10px;
-}
-
-.control-center .notification-background .notification {
-  border-radius: 0px;
-}
-
-.control-center .notification-background .notification.low {
-  opacity: 0.8;
-}
-
-.control-center .widget-title > label {
-  color: #cdd6f4;
-  font-size: 1.3em;
-}
-
-.control-center .widget-title button {
-  border-radius: 0px;
-  color: #cdd6f4;
-  background-color: #313244;
-  box-shadow: inset 0 0 0 1px #45475a;
-  padding: 8px;
-}
-
-.control-center .widget-title button:hover {
-  background-color: #45475a;
-}
-
-.control-center .widget-title button:active {
-  background-color: #585b70;
-}
-
-.control-center .notification-group {
-  margin-top: 10px;
-}
-
-.control-center .notification-group:focus .notification-background {
-  background-color: #313244;
-}
-
-scrollbar slider {
-  margin: -3px;
-  opacity: 0.8;
-}
-
-scrollbar trough {
-  margin: 2px 0;
-}
-
-/* dnd */
-.widget-dnd {
-  margin-top: 5px;
-  border-radius: 0px;
-  font-size: 1.1rem;
-}
-
-.widget-dnd > switch {
-  font-size: initial;
-  border-radius: 0px;
-  background: #313244;
-  box-shadow: none;
-}
-
-.widget-dnd > switch:checked {
-  background: #89b4fa;
-}
-
-.widget-dnd > switch slider {
-  background: #45475a;
-  border-radius: 0px;
-}
-
-/* mpris */
-.widget-mpris-player {
-  background: #313244;
-  border-radius: 0px;
-  color: #cdd6f4;
-}
-
-.mpris-overlay {
-  background-color: #313244;
-  opacity: 0.9;
-  padding: 15px 10px;
-}
-
-.widget-mpris-album-art {
-  -gtk-icon-size: 100px;
-  border-radius: 0px;
-  margin: 0 10px;
-}
-
-.widget-mpris-title {
-  font-size: 1.2rem;
-  color: #cdd6f4;
-}
-
-.widget-mpris-subtitle {
-  font-size: 1rem;
-  color: #bac2de;
-}
-
-.widget-mpris button {
-  border-radius: 0px;
-  color: #cdd6f4;
-  margin: 0 5px;
-  padding: 2px;
-}
-
-.widget-mpris button image {
-  -gtk-icon-size: 1.8rem;
-}
-
-.widget-mpris button:hover {
-  background-color: #313244;
-}
-
-.widget-mpris button:active {
-  background-color: #45475a;
-}
-
-.widget-mpris button:disabled {
-  opacity: 0.5;
-}
-
-.widget-menubar > box > .menu-button-bar > button > label {
-  font-size: 3rem;
-  padding: 0.5rem 2rem;
-}
-
-.widget-menubar > box > .menu-button-bar > :last-child {
-  color: #f38ba8;
-}
-
-.power-buttons button:hover,
-.powermode-buttons button:hover,
-.screenshot-buttons button:hover {
-  background: #313244;
-}
-
-.control-center .widget-label > label {
-  color: #cdd6f4;
-  font-size: 2rem;
-}
-
-.widget-buttons-grid {
-  padding-top: 1rem;
-}
-
-.widget-buttons-grid > flowbox > flowboxchild > button label {
-  font-size: 2.5rem;
-}
-
-.widget-volume {
-  padding: 1rem 0;
-}
-
-.widget-volume label {
-  color: #74c7ec;
-  padding: 0 1rem;
-}
-
+/* --- Sliders --- */
 .widget-volume trough highlight {
-  background: #74c7ec;
+  background: #8be9fd; /* Cyan */
 }
 
 .widget-backlight trough highlight {
-  background: #f9e2af;
+  background: #f1fa8c; /* Yellow */
 }
 
-.widget-backlight label {
-  font-size: 1.5rem;
-  color: #f9e2af;
+trough slider {
+  background: #f8f8f2;
+  border-radius: 0px;
 }
 
-.widget-backlight .KB {
-  padding-bottom: 1rem;
+/* --- Scrollbar --- */
+scrollbar slider {
+  background: #6272a4;
+  border-radius: 0px;
 }
 
-.image {
-  padding-right: 0.5rem;
+scrollbar trough {
+  background: transparent;
 }

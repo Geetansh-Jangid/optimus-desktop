@@ -1,0 +1,5 @@
+{
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "Ocean Green: Dark",
+    "files.autoSave": "afterDelay"
+}

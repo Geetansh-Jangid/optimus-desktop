@@ -4,10 +4,8 @@ btop
 hyprlock
 foot
 waybar
-cheese
 normcap
 nwg-look
-rofi
 swaync
 niri
 rsync
@@ -19,14 +17,14 @@ s-tui
 gdu
 fzf
 gum
-swww
 noto-fonts
 noto-fonts-cjk
 thunar
 thunar-archive-plugin
 tumbler
+gufw
 lazygit
-zed
+geany
 iwd
 polkit
 smartmontools
@@ -35,6 +33,7 @@ wget
 wireless_tools
 wpa_supplicant
 xdg-utils
+yazi
 xdg-desktop-portal-gnome
 xorg-xwayland
 spotify
@@ -42,3 +41,4 @@ discord
 gvfs
 gnome-keyring
 xwayland-satellite
+tlpui

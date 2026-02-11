@@ -2,7 +2,6 @@
 
 # Define options
 options=(
-  # Format: "Text to display\0icon\x1f<icon_name>\x1f"
   "Power Off"
   "Reboot"
   "Lock"
@@ -10,15 +9,30 @@ options=(
   "Logout"
 )
 
-# Use rofi to pick one
-choice=$(printf "%s\n" "${options[@]}" | rofi -i -p "System:" -dmenu -theme-str 'window { width: 30%; } listview { lines: 5; }')
+# Use vicinae dmenu to pick one
+# --no-quick-look ensures it waits for you to press Enter
+choice=$(printf "%s\n" "${options[@]}" | vicinae dmenu --placeholder "System Action:" --no-quick-look)
 
-# The case statement only needs the text part now
+# Execute the command based on selection
 case "$choice" in
-"Power Off") systemctl poweroff ;;
-"Reboot") systemctl reboot ;;
-"Lock") hyprlock ;;
-"Suspend") systemctl suspend ;;
-"Logout") pkill niri ;;
-*) exit 0 ;;
+"Power Off")
+  systemctl poweroff
+  ;;
+"Reboot")
+  systemctl reboot
+  ;;
+"Lock")
+  # Using hyprlock as per your original script
+  hyprlock
+  ;;
+"Suspend")
+  systemctl suspend
+  ;;
+"Logout")
+  # Specific to your Niri session
+  pkill niri
+  ;;
+*)
+  exit 0
+  ;;
 esac

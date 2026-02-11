@@ -1,0 +1,70 @@
+/* --- Osaka Jade Theme --- */
+@define-color background #111c18; /* Deep Forest Black */
+@define-color foreground #c1c497; /* Jade Cream */
+@define-color focused-bg  #549e6a; /* Osaka Jade Green */
+@define-color focused-fg  #111c18; 
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+}
+
+window#waybar {
+    background-color: @background;
+    color: @foreground;
+}
+
+/* --- 1. THE SQUARE WORKSPACES --- */
+#workspaces {
+    margin: 0;
+    padding: 0;
+}
+
+#workspaces button {
+    min-width: 25px; 
+    padding: 0;
+    margin: 0;
+    color: @foreground;
+    background-color: transparent;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+    background-color: @focused-bg;
+    color: @focused-fg;
+}
+
+#workspaces button:hover {
+    background-color: #23372b; /* Deep Jade Selection */
+    color: #f6f5dd;           /* Brightest Ivory */
+}
+
+/* --- 2. STATUS MODULES --- */
+#clock, 
+#pulseaudio, 
+#cpu, 
+#memory, 
+#temperature, 
+#backlight, 
+#disk, 
+#battery, 
+#network,
+#custom-uptime,
+#custom-updates,
+#idle_inhibitor,
+#tray {
+    padding: 0 10px; 
+    margin: 0;
+    min-height: 26px;
+    background-color: transparent;
+}
+
+/* Osaka Jade Palette Colors */
+#clock { color: #8cd3cb; }        /* Teal/Aqua */
+#cpu { color: #549e6a; }          /* Jade Green */
+#memory { color: #d2689c; }       /* Muted Pink */
+#battery { color: #e5c736; }      /* Golden Yellow */
+#pulseaudio { color: #ff5345; }    /* Soft Red */
+#network { color: #2dd5b7; }       /* Bright Jade */

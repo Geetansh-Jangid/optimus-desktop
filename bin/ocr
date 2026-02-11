@@ -1,0 +1,3 @@
+cd ~/tools/ocr/
+source .venv/bin/activate
+python app.py

@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Define file paths
+BLACKLIST_FILE="/etc/modprobe.d/blacklist-nvidia.conf"
+UDEV_FILE="/etc/udev/rules.d/00-remove-nvidia.rules"
+
+# ------------------------------------------------------
+# Self-Elevation Logic
+# ------------------------------------------------------
+if [ "$EUID" -ne 0 ]; then
+  echo "🔒 This script requires root privileges to modify system files."
+  echo "🔑 Please enter your sudo password to continue..."
+
+  # Re-run the script with sudo, passing all original arguments ($@)
+  sudo "$0" "$@"
+
+  # Exit the original non-root script with the status code of the sudo command
+  exit $?
+fi
+# ------------------------------------------------------
+
+# Function to update initramfs based on distro
+update_kernel() {
+  echo "🔄 Updating initial RAM filesystem to apply changes..."
+
+  if command -v update-initramfs &>/dev/null; then
+    # Ubuntu / Debian / Mint / Pop!_OS
+    update-initramfs -u
+  elif command -v dracut &>/dev/null; then
+    # Fedora / RHEL / CentOS
+    dracut --force
+  else
+    echo "ℹ️  No compatible initramfs updater found (or mkinitcpio skipped). Assuming manual update or not required."
+  fi
+}
+
+# Function to ask for reboot
+ask_reboot() {
+  echo ""
+  # -p prints the prompt
+  # -n 1 accepts input after 1 character (no need to press enter)
+  # -r prevents backslash interpretation
+  read -p "❓ Do you want to reboot now to apply changes? [Y/n] " -n 1 -r
+  echo "" # Move to a new line
+
+  # Check if reply is empty (Enter key) or starts with Y/y
+  if [[ -z "$REPLY" || "$REPLY" =~ ^[Yy]$ ]]; then
+    echo "🔄 Rebooting system..."
+    reboot
+  else
+    echo "⚠️  Reboot canceled. Please remember to reboot manually later."
+  fi
+}
+
+# Function to Disable NVIDIA (Create files)
+disable_nvidia() {
+  echo "------------------------------------------------"
+  echo "🔌 DISABLING NVIDIA GPU (Battery Saver Mode)"
+  echo "------------------------------------------------"
+
+  # 1. Create Blacklist File
+  echo "   -> Creating $BLACKLIST_FILE..."
+  cat <<EOF >"$BLACKLIST_FILE"
+blacklist nvidia
+blacklist nvidia_drm
+blacklist nvidia_modeset
+blacklist nvidia_uvm
+options nvidia modeset=0
+EOF
+
+  # 2. Create Udev Rules
+  echo "   -> Creating $UDEV_FILE..."
+  cat <<EOF >"$UDEV_FILE"
+# Remove NVIDIA USB xHCI Host Controller devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
+
+# Remove NVIDIA USB Type-C UCSI devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
+
+# Remove NVIDIA Audio devices, if present
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto", ATTR{remove}="1"
+
+# Remove NVIDIA VGA/3D controller devices
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
+EOF
+
+  # 3. Update Kernel
+  update_kernel
+
+  echo "✅ Success! NVIDIA drivers blacklisted and removal rules added."
+  ask_reboot
+}
+
+# Function to Enable NVIDIA (Remove files)
+enable_nvidia() {
+  echo "------------------------------------------------"
+  echo "🎮 ENABLING NVIDIA GPU (Performance Mode)"
+  echo "------------------------------------------------"
+
+  # 1. Remove Blacklist File
+  if [ -f "$BLACKLIST_FILE" ]; then
+    echo "   -> Removing $BLACKLIST_FILE..."
+    rm "$BLACKLIST_FILE"
+  else
+    echo "   -> Blacklist file not found (already enabled?)"
+  fi
+
+  # 2. Remove Udev Rules
+  if [ -f "$UDEV_FILE" ]; then
+    echo "   -> Removing $UDEV_FILE..."
+    rm "$UDEV_FILE"
+  else
+    echo "   -> Udev rules not found (already enabled?)"
+  fi
+
+  # 3. Update Kernel
+  update_kernel
+
+  echo "✅ Success! NVIDIA restrictions removed."
+  ask_reboot
+}
+
+# Main Logic
+case "$1" in
+off)
+  disable_nvidia
+  ;;
+on)
+  enable_nvidia
+  ;;
+*)
+  echo "Usage: $0 [on|off]"
+  echo "  off : Disable Nvidia GPU (Blacklist + Udev remove)"
+  echo "  on  : Enable Nvidia GPU (Restore defaults)"
+  exit 1
+  ;;
+esac

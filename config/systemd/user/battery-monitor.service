@@ -1,0 +1,10 @@
+[Unit]
+Description=Arch Battery Monitor Service
+
+[Service]
+ExecStart=/home/geetansh/.local/bin/battery.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

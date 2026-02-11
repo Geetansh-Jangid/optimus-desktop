@@ -1,44 +1,59 @@
 #!/usr/bin/env bash
 
 # --- CONFIGURABLE PART ---
-# List of common Chromium-based browser executables, ordered by preference
 CHROME_BROWSERS=(
-    "google-chrome"
-    "google-chrome-stable"
-    "brave"
-    "chromium"
-    "microsoft-edge-stable"
-    "vivaldi"
-    "opera"
+  "chromium"
+  "brave"
+  "google-chrome"
+  "google-chrome-stable"
+  "microsoft-edge-stable"
+  "vivaldi"
+  "opera"
 )
 # --------------------------
 
-URL="$1"
+URL=""
+EXTRA_ARGS=""
 
-if [ -z "$URL" ]; then
-    echo "Usage: webapp <url>"
-    exit 1
-fi
-
-# 🔎 Detect the installed Chromium-based browser
-WEBAPP_BROWSER=""
-for BROWSER_EXE in "${CHROME_BROWSERS[@]}"; do
-    if command -v "$BROWSER_EXE" &> /dev/null; then
-        WEBAPP_BROWSER="$BROWSER_EXE"
-        break
-    fi
+# 🔄 Parse Arguments (Handles flags and URL in any order)
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --incognito)
+      EXTRA_ARGS="--incognito"
+      shift # Move to next argument
+      ;;
+    *)
+      # If it's not a flag, assume it's the URL
+      URL="$1"
+      shift # Move to next argument
+      ;;
+  esac
 done
 
-# 🛑 Check if a browser was found
-if [ -z "$WEBAPP_BROWSER" ]; then
-    echo "Error: Could not find any supported Chromium-based browser executable."
-    echo "Tried: ${CHROME_BROWSERS[*]}"
-    exit 1
+# 🛑 Validation
+if [ -z "$URL" ]; then
+  echo "Usage: launch-webapp [--incognito] <url>"
+  exit 1
 fi
 
-echo "Using detected browser: **$WEBAPP_BROWSER** to open web app for URL: **$URL**"
+# 🔎 Detect Browser
+WEBAPP_BROWSER=""
+for BROWSER_EXE in "${CHROME_BROWSERS[@]}"; do
+  if command -v "$BROWSER_EXE" &>/dev/null; then
+    WEBAPP_BROWSER="$BROWSER_EXE"
+    break
+  fi
+done
 
-# Open the detected browser in minimal app mode
-# Note: The specific flags for "app mode" and window controls may vary slightly, 
-# but --app is standard for all Chromium-based browsers.
-"$WEBAPP_BROWSER" --app="$URL" --enable-features=WindowControlsOverlay &
+if [ -z "$WEBAPP_BROWSER" ]; then
+  echo "Error: Could not find any supported Chromium-based browser."
+  exit 1
+fi
+
+echo "Browser: $WEBAPP_BROWSER"
+echo "URL:     $URL"
+echo "Mode:    App Mode ${EXTRA_ARGS}"
+
+# 🚀 Open Browser
+# We inject $EXTRA_ARGS (which is empty or contains --incognito) before the app flag
+"$WEBAPP_BROWSER" $EXTRA_ARGS --app="$URL" --enable-features=WindowControlsOverlay &

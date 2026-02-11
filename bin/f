@@ -1,0 +1,10 @@
+#!/bin/bash
+# Change Alacritty settings
+alacritty msg config -w -1 "window.padding={x=0, y=0}" "cursor.style={shape='Beam'}"
+
+# Launch fresh with the file passed from the file manager
+# We use -e to tell Alacritty to execute the command
+fresh "$1"
+
+# Restore settings
+alacritty msg config -w -1 "window.padding={x=14, y=14}" "cursor.style={shape='Block'}"

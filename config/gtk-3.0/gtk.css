@@ -1,13 +1,18 @@
-    /* Remove rounded corners from titlebars, backgrounds, and window elements */
-    /*.titlebar,
-    .titlebar .background,
-    decoration,
-    window,
-    window.background {
-        border-radius: 0px;
-    }
-    */
-    /* Optionally, remove rounded corners from all elements (use with caution as it might affect other UI elements) */
-    * {
-        border-radius: 0px !important;
-    }
+/** {
+    border-radius: 0px !important;
+}*/
+/* Remove rounded corners */
+.titlebar,
+.titlebar .background,
+decoration,
+window,
+window.background
+{
+    border-radius: 0;
+}
+
+/* Remove csd shadows */
+decoration, decoration:backdrop
+{
+    box-shadow: none;
+}
