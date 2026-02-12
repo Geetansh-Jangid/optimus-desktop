@@ -12,7 +12,7 @@ SWAYNC_LINK="$HOME/.config/current/swaync-style.css"
 WAYBAR_STYLE_LINK="$HOME/.config/current/waybar-style.css"
 
 # Define the explicit VS Code settings symlink path
-VSCODE_SETTINGS_LINK="/home/geetansh/.config/Code/User/settings.json"
+VSCODE_SETTINGS_LINK="$HOME/.config/Code/User/settings.json"
 VICINAE_CONFIG="$HOME/.config/vicinae/settings.json"
 
 # Define the fixed, physical files/directories for Direct Copy/Replacement/Sync
