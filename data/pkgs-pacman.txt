@@ -1,3 +1,6 @@
+zoxide
+grim
+songrec
 alacritty
 xarchiver
 btop
