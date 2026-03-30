@@ -1,7 +1,4 @@
 webapp-manager
 volantes-cursors
 vicinae-bin
-awww-git
-waybar-module-pacman-updates-git
 yaru-colors-gtk-theme
-yaru-colors-icon-theme

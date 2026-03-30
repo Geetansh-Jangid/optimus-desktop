@@ -1,0 +1,16 @@
+/* --- Nord Colors --- */
+@define-color bg0 #2E3440;      /* nord0 */
+@define-color bg1 #3B4252;      /* nord1 */
+@define-color bg2 #434C5E;      /* nord2 */
+@define-color bg3 #4C566A;      /* nord3 */
+
+@define-color fg #ECEFF4;       /* nord6 */
+@define-color fg_soft #E5E9F0;  /* nord5 */
+@define-color fg_dim #D8DEE9;   /* nord4 */
+
+@define-color accent_blue #88C0D0;   /* nord8 */
+@define-color accent_green #A3BE8C;  /* nord14 */
+@define-color accent_red #BF616A;    /* nord11 */
+@define-color accent_orange #D08770; /* nord12 */
+
+@define-color overlay rgba(46, 52, 64, 0.75);

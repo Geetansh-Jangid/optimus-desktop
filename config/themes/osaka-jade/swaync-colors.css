@@ -1,0 +1,14 @@
+/* --- Osaka Colors --- */
+@define-color bg0 #11221C;
+@define-color bg1 #182F27;
+@define-color bg2 #586e75;
+
+@define-color fg #a5b4b9;
+@define-color fg_strong #ffffff;
+
+@define-color accent_green #00a86b;   /* Jade */
+@define-color accent_red #a92920;
+@define-color accent_orange #cb4b16;
+@define-color accent_yellow #b58900;
+
+@define-color overlay rgba(17, 34, 28, 0.85);

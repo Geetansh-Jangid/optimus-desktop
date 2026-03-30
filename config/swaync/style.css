@@ -1,1 +1,208 @@
-@import "../current/swaync-style.css";
+@import url('../current/swaync-colors.css');
+
+* {
+  all: unset;
+  font-size: 14px;
+  font-family: "Adwaita Sans", sans-serif;
+}
+
+/* --- Main Control Center Panel --- */
+.control-center {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px @border;
+  border-radius: 0px;
+  background-color: @bg0;
+  color: @fg;
+  padding: 16px;
+}
+
+/* --- Title Widget --- */
+.widget-title {
+  margin: 8px 5px;
+}
+
+.widget-title > label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: @fg;
+}
+
+.widget-title > button {
+  background: @bg1;
+  border: 1px solid @border;
+  padding: 5px 12px;
+  color: @fg;
+  border-radius: 0px;
+}
+
+.widget-title > button:hover {
+  background: @border;
+  border-color: @accent_aqua;
+}
+
+/* --- DND Widget --- */
+.widget-dnd {
+  margin: 8px 5px;
+  font-weight: bold;
+}
+
+.widget-dnd > switch {
+  background: @bg1;
+  border: 1px solid @border;
+  border-radius: 0px;
+  min-height: 24px;
+  min-width: 48px;
+}
+
+.widget-dnd > switch:checked {
+  background: @accent_green;
+}
+
+.widget-dnd > switch slider {
+  background: @fg;
+  border-radius: 0px;
+  margin: 2px;
+}
+
+/* --- Media Player (MPRIS) --- */
+.widget-mpris {
+  background: @bg1;
+  border: 1px solid @border;
+  margin: 10px 5px;
+  padding: 0px; 
+  overflow: hidden;
+}
+
+.widget-mpris-player {
+  background: transparent;
+  padding: 12px;
+}
+
+.mpris-overlay {
+  background-color: @overlay;
+}
+
+.widget-mpris-album-art {
+  border-radius: 0px;
+  -gtk-icon-size: 80px;
+}
+
+.widget-mpris-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: @fg;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris-subtitle {
+  font-size: 0.9rem;
+  color: @fg;
+  opacity: 0.8;
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.9);
+}
+
+.widget-mpris button {
+  background: transparent;
+  color: @fg;
+  margin: 0 8px;
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+}
+
+.widget-mpris button:hover {
+  color: @accent_aqua;
+}
+
+/* --- Notifications --- */
+
+/* Floating Popups (7px Margin) */
+.notification-background {
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px @border;
+  border-radius: 0px;
+  margin: 4px; 
+  background: @bg0;
+}
+
+/* Notifications inside the panel */
+.control-center .notification-background {
+  margin: 10px 5px;
+  background: @bg1;
+}
+
+.notification-background .notification {
+  padding: 12px;
+  border-radius: 0px;
+}
+
+.notification-background .notification.critical {
+  border: 1px solid @accent_red;
+  box-shadow: inset 0 0 7px 0 rgba(230, 126, 128, 0.4);
+}
+
+.notification-content {
+  margin: 5px;
+  border-spacing: 10px;
+}
+
+.notification-default-image {
+  margin-right: 12px;
+  border-radius: 0px;
+}
+
+.notification-content overlay {
+  margin: 0 10px 0 0;
+}
+
+.notification-content overlay image {
+  -gtk-icon-size: 52px;
+  border-radius: 0px;
+}
+
+.notification-content .summary {
+  font-weight: bold;
+  color: @fg;
+}
+
+.notification-content .body {
+  color: @fg;
+}
+
+.notification-background .close-button {
+  margin: 5px;
+  background-color: @accent_red;
+  color: @bg0;
+  padding: 2px;
+  border-radius: 0px;
+}
+
+.notification-background .close-button:hover {
+  background-color: @accent_orange;
+}
+
+.notification-action-buttons {
+  margin-top: 12px;
+  margin-bottom: 2px;
+}
+
+.notification .notification-action {
+  border-radius: 0px;
+  color: @fg;
+  background-color: @bg1;
+  box-shadow: inset 0 0 0 1px @border;
+  margin: 4px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.notification .notification-action:hover {
+  background-color: @accent_aqua;
+  color: @bg0;
+}
+
+/* --- Scrollbar --- */
+scrollbar slider {
+  background: @bg3;
+  border-radius: 0px;
+}
+
+scrollbar trough {
+  background: transparent;
+}

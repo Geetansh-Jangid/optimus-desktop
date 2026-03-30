@@ -21,6 +21,7 @@ gdu
 fzf
 gum
 noto-fonts
+awww
 noto-fonts-cjk
 thunar
 thunar-archive-plugin

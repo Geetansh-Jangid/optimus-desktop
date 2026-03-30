@@ -1,0 +1,5 @@
+/* --- Monochrome AMOLED --- */
+@define-color background #000000;
+@define-color foreground #FFFFFF;
+@define-color dim-text #7f7f7f;
+@define-color accent #a55555;

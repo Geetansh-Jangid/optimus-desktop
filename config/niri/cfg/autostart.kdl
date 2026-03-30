@@ -1,0 +1,5 @@
+spawn-sh-at-startup "gnome-keyring-daemon --start --components=secrets"
+spawn-sh-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+spawn-sh-at-startup "xhost +si:localuser:root"
+spawn-sh-at-startup "vicinae server"
+spawn-sh-at-startup "~/.local/bin/wallpaper.sh"

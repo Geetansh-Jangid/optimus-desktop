@@ -1,5 +1,6 @@
 {
     "security.workspace.trust.untrustedFiles": "open",
     "workbench.colorTheme": "Matte Black",
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "explorer.confirmDelete": false
 }

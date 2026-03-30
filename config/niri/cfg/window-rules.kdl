@@ -1,0 +1,142 @@
+// corners
+window-rule {
+    geometry-corner-radius 0
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+// make inactive windows transparent
+/-window-rule {
+    match is-active=false
+    opacity 0.9
+}
+
+window-rule {
+    match app-id="brave"
+    open-maximized true
+}
+
+window-rule {
+    match app-id="zen"
+    open-maximized true
+}
+
+window-rule {
+    match app-id="gimp"
+    open-maximized true
+}
+
+window-rule {
+    match app-id="brave-web.whatsapp.com__-Default"
+    open-maximized false
+}
+
+window-rule {
+    match app-id="brave-music.youtube.com__-Default"
+    open-maximized false
+}
+
+// Open the Firefox picture-in-picture player as floating by default.
+window-rule {
+    // This app-id regular expression will work for both:
+    // - host Firefox (app-id is "firefox")
+    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
+    match app-id=r#"zen$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="thunar"
+    
+    // 1. Target titles that START with "Rename " (note the space)
+    match title=r#"^Rename "#
+    
+    // 2. SAFETY: Exclude the main file manager window 
+    // Most Thunar main windows end with " - Thunar"
+    exclude title=r#".* - Thunar$"#
+    
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"thunar$"# title="^File Operation Progress$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"protonvpn-app$"# title="^Active connection found$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="quickgui"
+    open-floating true
+}
+
+// Example: block out two password managers from screen capture.
+// (This example rule is commented out with a "/-" in front.)
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+
+    block-out-from "screen-capture"
+}
+
+// Impala
+window-rule {
+    match app-id=r#"Alacritty"# title="^nmtui$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}
+
+// Pacman Install
+window-rule {
+    match app-id=r#"Alacritty"# title="^pkg-pacman-install$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}
+
+// AUR Install
+window-rule {
+    match app-id=r#"Alacritty"# title="^pkg-aur-install$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}
+
+// Remove Package
+window-rule {
+    match app-id=r#"Alacritty"# title="^pkg-remove$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}
+
+// Webapp Remove
+window-rule {
+    match app-id=r#"Alacritty"# title="^webapp-remove$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}
+
+// Update System
+window-rule {
+    match app-id=r#"Alacritty"# title="^update-system"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.5; }
+    default-floating-position x=480 y=270 relative-to="top-left"
+    opacity 1.0
+}

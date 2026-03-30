@@ -1,29 +1,26 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 25,
-  "spacing": 1,
-  "margin": 0,
+  "height": 26,
+  "spacing": 0,
+  "margin": "0",
   "modules-left": ["niri/workspaces"],
-  "modules-center": ["niri/window"],
+  "modules-center": ["clock"],
   "modules-right": [
-    "clock",
     "pulseaudio",
     "group/stats",
     "battery",
-    "tray",
+    "tray"
   ],
   
   "group/stats": {
     "orientation": "inherit",
     "drawer": {
-        // These settings control the hover-to-expand behavior
         "transition-duration": 250,
         "children-class": "resources-drawer",
         "transition-left-to-right": true,
-        "click-to-reveal": false, // <--- This is the key setting
     },
-    "modules": [ "memory", "temperature", "custom/uptime", "backlight", "cpu", "disk", "custom/updates"],
+    "modules": [ "memory",  "custom/uptime", "backlight", "cpu", "disk"],
   },
 
   "niri/workspaces": {
@@ -52,18 +49,9 @@
     "interval": 60,
   },
 
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "󰈈",
-      "deactivated": "󰈉",
-    },
-    "tooltip": true,
-  },
-
   "clock": {
-    "format": "󰥔 {:%H:%M}",
-    "format-alt": "󰃮 {:%Y-%m-%d}",
+    "format": "{:L%A %H:%M}",
+    "format-alt": "{:L%d %B W%V %Y}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "calendar": {
       "mode": "month",
@@ -101,47 +89,47 @@
     "on-click": "alacritty -e btop",
   },
 
-  "temperature": {
-    "critical-threshold": 80,
-    "format": "{icon} {temperatureC}°C",
-    "format-icons": ["󱃃", "󰔏", "󱃂"],
-    "on-click": "alacritty -e s-tui",
-  },
-
   "battery": {
-    "states": {
-      "good": 95,
-      "warning": 30,
-      "critical": 15,
-    },
     "format": "{icon} {capacity}%",
-    "format-charging": "󰂄 {capacity}%",
-    "format-plugged": "󰚥 {capacity}%",
+    "format-discharging": "{icon} {capacity}%",
+    "format-charging": "{icon} {capacity}%",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
     "format-alt": "{icon} {time}",
-    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
     "on-click-right": "tlpui",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
   },
-
+  
   "pulseaudio": {
     "format": "{icon} {volume}%",
-    "format-bluetooth": "󰂰 {volume}%",
-    "format-bluetooth-muted": "󰂲 {icon}",
-    "format-muted": "󰝟",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pavucontrol",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ -l 1",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
     "format-icons": {
-      "headphone": "󰋋",
+      "headphone": "",
       "hands-free": "󰥰",
       "headset": "󰋎",
       "phone": "󰏲",
       "portable": "󰄝",
       "car": "󰄋",
-      "default": ["󰕿", "󰖀", "󰕾"],
-    },
-    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-    "on-click-right": "pavucontrol",
-    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +2%",
-    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -2%",
+      "default": ["", "", " "]
+    }
   },
-
+  
   "backlight": {
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞", "󰃟", "󰃠"],
@@ -157,56 +145,21 @@
   },
 
   "tray": {
-    "icon-size": 18,
-    "spacing": 5,
+    "icon-size": 12,
+    "spacing": 10,
   },
   
-  /*
-  "network": {
-    "format-wifi": "󰖩 {essid} ({signalStrength}%)",
-    "format-ethernet": "󰈀 {ifname}",
-    "format-linked": "󰈀 {ifname} (No IP)",
-    "format-disconnected": "󰖪 Disconnected",
-    "format-alt": "{ifname}: {ipaddr}/{cidr}",
-    "tooltip-format": "{ifname}: {ipaddr}",
-    "on-click-right": "alacritty -e nmtui",
-  },
-  
-  "custom/playerctl": {
-    "exec": "~/.local/bin/playerctl.sh",
-    "interval": 1,
-    "on-click": "~/.local/bin/playerctl.sh play-pause",
-    "on-scroll-up": "playerctl next",
-    "on-scroll-down": "playerctl previous",
-    "tooltip": true,
-  },
-
-  "custom/quote": {
-    "format": "󰚛 {}",
-    "interval": 3600,
-    "exec": "fortune -s",
-    "on-click": "fortune | yad --text-info --width=400 --height=200 --title='Fortune'",
-    "tooltip": true,
-  },
-  
-  "custom/notification": {
-    "tooltip": false,
-    "format": "{0} {icon}",
-    "format-icons": {
-      "notification": "<span foreground='red'><sup></sup></span>",
-      "none": "",
-      "dnd-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-none": "",
-      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "inhibited-none": "",
-      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-inhibited-none": "",
-    },
-    "return-type": "json",
-    "exec-if": "which swaync-client",
-    "exec": "swaync-client -swb",
-    "on-click": "swaync-client -t -sw",
-    "on-click-right": "swaync-client -d -sw",
-    "escape": true,
-  },*/
+  /*"network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "alacritty --title \"nmtui\" -e nmtui"
+  }*/
 }

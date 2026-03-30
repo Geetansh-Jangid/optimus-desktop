@@ -5,7 +5,9 @@
   "control-center-width": 400,
   "control-center-margin-top": 0,
   "control-center-margin-right": 0,
-  "notification-window-width": 400,
+  "notification-window-width":400,
+  "notification-2fa-action": false,
+  "notification-inline-replies": false,
   "widgets": [
     "title",
     "dnd",

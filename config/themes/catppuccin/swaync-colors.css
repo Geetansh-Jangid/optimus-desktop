@@ -1,0 +1,13 @@
+/* --- Catppuccin Mocha Colors --- */
+@define-color bg0 #1E1E2E;        /* base */
+@define-color bg1 #313244;        /* surface0 */
+@define-color bg3 #45475A;        /* surface1 */
+@define-color border #1b1b29;     /* surface2 */
+@define-color fg #CDD6F4;         /* text */
+
+@define-color accent_aqua #89DCEB;   /* sky */
+@define-color accent_green #A6E3A1;  /* green */
+@define-color accent_red #F38BA8;    /* red */
+@define-color accent_orange #FAB387; /* peach */
+
+@define-color overlay rgba(30, 30, 46, 0.75);

@@ -1,0 +1,20 @@
+@define-color bg0 #000000;
+@define-color bg1 #000000;
+@define-color bg3 #FFFFFF;
+
+@define-color border #333333;
+@define-color border_alt #222222;
+
+@define-color fg #FFFFFF;
+@define-color fg_alt #DDDDDD;
+@define-color fg_dim #AAAAAA;
+
+@define-color accent_aqua #888888;
+@define-color accent_green #FFFFFF;
+@define-color accent_red #FFFFFF;
+@define-color accent_orange #888888;
+
+@define-color slider #888888;
+@define-color slider_active #000000;
+
+@define-color overlay rgba(0, 0, 0, 0.85);
